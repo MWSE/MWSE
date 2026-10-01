@@ -11,27 +11,28 @@ namespace mwse {
 	class xGetClass : InstructionInterface_t {
 	public:
 		xGetClass();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetClass xGetClassInstance;
 
-	xGetClass::xGetClass() : mwse::InstructionInterface_t(OpCode::xGetClass) {}
+	xGetClass::xGetClass() : InstructionInterface_t(OpCode::xGetClass) {}
 
-	float xGetClass::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetClass::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetClass: No reference provided." << std::endl;
+				log::getLog() << "xGetClass: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -39,35 +40,35 @@ namespace mwse {
 		TES3::Object* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetClass: No object found for reference." << std::endl;
+				log::getLog() << "xGetClass: No object found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 		else if (object->objectType != TES3::ObjectType::NPC) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetClass: Called on a non-NPC reference." << std::endl;
+				log::getLog() << "xGetClass: Called on a non-NPC reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Get argument:
-		long attributesMask = mwse::Stack::getInstance().popLong();
-		long majorMask = mwse::Stack::getInstance().popLong();
-		long minorMask = mwse::Stack::getInstance().popLong();
+		long attributesMask = stack.popLong();
+		long majorMask = stack.popLong();
+		long minorMask = stack.popLong();
 
 		// Get the class record.
 		TES3::Class* classRecord = object->getClass();
@@ -99,13 +100,13 @@ namespace mwse {
 		}
 
 		// Push results
-		mwse::Stack::getInstance().pushLong(minorSkills);
-		mwse::Stack::getInstance().pushLong(majorSkills);
-		mwse::Stack::getInstance().pushLong(attributes);
-		mwse::Stack::getInstance().pushLong(specialization);
-		mwse::Stack::getInstance().pushLong(playable);
-		mwse::Stack::getInstance().pushString(name);
-		mwse::Stack::getInstance().pushString(id);
+		stack.pushLong(minorSkills);
+		stack.pushLong(majorSkills);
+		stack.pushLong(attributes);
+		stack.pushLong(specialization);
+		stack.pushLong(playable);
+		stack.pushString(name);
+		stack.pushString(id);
 
 		return 0.0f;
 	}

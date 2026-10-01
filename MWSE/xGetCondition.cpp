@@ -10,21 +10,22 @@ namespace mwse {
 	class xGetCondition : InstructionInterface_t {
 	public:
 		xGetCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetCondition xGetConditionInstance;
 
-	xGetCondition::xGetCondition() : mwse::InstructionInterface_t(OpCode::xGetCondition) {}
+	xGetCondition::xGetCondition() : InstructionInterface_t(OpCode::xGetCondition) {}
 
-	float xGetCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetCondition::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCondition: No reference provided." << std::endl;
+				log::getLog() << "xGetCondition: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -39,7 +40,7 @@ namespace mwse {
 			value = reference->baseObject->getDurability();
 		}
 
-		mwse::Stack::getInstance().pushLong(value);
+		stack.pushLong(value);
 
 		return 0.0f;
 	}

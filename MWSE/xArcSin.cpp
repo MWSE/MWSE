@@ -6,15 +6,16 @@ namespace mwse {
 	class xArcSin : InstructionInterface_t {
 	public:
 		xArcSin();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xArcSin xArcSinInstance;
 
-	xArcSin::xArcSin() : mwse::InstructionInterface_t(OpCode::xArcSin) {}
+	xArcSin::xArcSin() : InstructionInterface_t(OpCode::xArcSin) {}
 
-	float xArcSin::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::asin(mwse::Stack::getInstance().popFloat()));
+	float xArcSin::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::asin(stack.popFloat()));
 		return 0.0f;
 	}
 }

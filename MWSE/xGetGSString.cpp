@@ -10,26 +10,27 @@ namespace mwse {
 	class xGetGSString : InstructionInterface_t {
 	public:
 		xGetGSString();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetGSString xGetGSStringInstance;
 
-	xGetGSString::xGetGSString() : mwse::InstructionInterface_t(OpCode::xGetGSString) {}
+	xGetGSString::xGetGSString() : InstructionInterface_t(OpCode::xGetGSString) {}
 
-	float xGetGSString::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long gmstId = Stack::getInstance().popLong();
+	float xGetGSString::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long gmstId = stack.popLong();
 
 		if (gmstId < TES3::GMST::FirstGMST || gmstId > TES3::GMST::LastGMST) {
-			mwse::log::getLog() << "xGetGSString: Invalid GMST id." << std::endl;
-			mwse::Stack::getInstance().pushLong(NULL);
+			log::getLog() << "xGetGSString: Invalid GMST id." << std::endl;
+			stack.pushLong(NULL);
 			return 0.0f;
 		}
 
 		// Get the string. No real sanity checks here...
 		char* value = TES3::DataHandler::get()->nonDynamicData->GMSTs[gmstId]->value.asString;
 
-		mwse::Stack::getInstance().pushString(value);
+		stack.pushString(value);
 
 		return 0.0f;
 	}

@@ -7,14 +7,14 @@ namespace mwse {
 	{
 	public:
 		xGetPCTarget();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetPCTarget xGetPCTargetInstance;
 
 	xGetPCTarget::xGetPCTarget() : InstructionInterface_t(OpCode::xGetPCTarget) {}
 
-	float xGetPCTarget::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetPCTarget::execute(VMExecuteInterface& virtualMachine) {
 		//get the current target
 		TES3::Reference* target = virtualMachine.getCurrentTarget();
 

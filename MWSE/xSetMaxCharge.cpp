@@ -11,25 +11,26 @@ namespace mwse {
 	class xSetMaxCharge : InstructionInterface_t {
 	public:
 		xSetMaxCharge();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetMaxCharge xSetMaxChargeInstance;
 
-	xSetMaxCharge::xSetMaxCharge() : mwse::InstructionInterface_t(OpCode::xSetMaxCharge) {}
+	xSetMaxCharge::xSetMaxCharge() : InstructionInterface_t(OpCode::xSetMaxCharge) {}
 
-	float xSetMaxCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetMaxCharge::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter from the stack.
-		float maxCharge = mwse::Stack::getInstance().popFloat();
+		float maxCharge = stack.popFloat();
 		bool success = false;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCharge: No reference provided." << std::endl;
+				log::getLog() << "xSetMaxCharge: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -37,9 +38,9 @@ namespace mwse {
 		TES3::Object* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCharge: No record found for reference." << std::endl;
+				log::getLog() << "xSetMaxCharge: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -60,7 +61,7 @@ namespace mwse {
 		}
 
 		// Push success state.
-		mwse::Stack::getInstance().pushLong(success);
+		stack.pushLong(success);
 
 		return 0.0f;
 	}

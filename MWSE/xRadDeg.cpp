@@ -8,17 +8,18 @@ namespace mwse {
 	class xRadDeg : InstructionInterface_t {
 	public:
 		xRadDeg();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRadDeg xRadDegInstance;
 
-	xRadDeg::xRadDeg() : mwse::InstructionInterface_t(OpCode::xRadDeg) {}
+	xRadDeg::xRadDeg() : InstructionInterface_t(OpCode::xRadDeg) {}
 
-	float xRadDeg::execute(mwse::VMExecuteInterface& virtualMachine) {
-		const auto radians = mwse::Stack::getInstance().popFloat();
+	float xRadDeg::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		const auto radians = stack.popFloat();
 		const auto degrees = se::math::radiansToDegrees(radians);
-		mwse::Stack::getInstance().pushFloat(degrees);
+		stack.pushFloat(degrees);
 		return 0.0f;
 	}
 }

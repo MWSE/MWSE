@@ -15,25 +15,26 @@ namespace mwse {
 	class xSetMaxCondition : InstructionInterface_t {
 	public:
 		xSetMaxCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetMaxCondition xSetMaxConditionInstance;
 
-	xSetMaxCondition::xSetMaxCondition() : mwse::InstructionInterface_t(OpCode::xSetMaxCondition) {}
+	xSetMaxCondition::xSetMaxCondition() : InstructionInterface_t(OpCode::xSetMaxCondition) {}
 
-	float xSetMaxCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetMaxCondition::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter from the stack.
-		int maxCondition = static_cast<int>(mwse::Stack::getInstance().popLong());
+		int maxCondition = static_cast<int>(stack.popLong());
 		bool success = false;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCondition: No reference provided." << std::endl;
+				log::getLog() << "xSetMaxCondition: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -41,9 +42,9 @@ namespace mwse {
 		TES3::BaseObject* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCondition: No object found for reference." << std::endl;
+				log::getLog() << "xSetMaxCondition: No object found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -65,9 +66,9 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetMaxCondition: Invalid object type: " << object->objectType << std::endl;
+				log::getLog() << "xSetMaxCondition: Invalid object type: " << object->objectType << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(success);
+			stack.pushLong(success);
 			return 0.0f;
 		}
 
@@ -79,7 +80,7 @@ namespace mwse {
 		}
 
 		// Push success state.
-		mwse::Stack::getInstance().pushLong(success);
+		stack.pushLong(success);
 
 		return 0.0f;
 	}
