@@ -28,6 +28,7 @@
 #include "TES3Class.h"
 #include "TES3Container.h"
 #include "TES3Creature.h"
+#include "TES3DataHandler.h"
 #include "TES3Game.h"
 #include "TES3GameSetting.h"
 #include "TES3ItemData.h"
@@ -1205,6 +1206,26 @@ namespace TES3 {
 		relocate(cell, position, se::math::radiansToDegrees(cachedOrientation.z));
 
 		setOrientation(&cachedOrientation);
+	}
+
+	const auto TES3_Reference_returnToStartCell = reinterpret_cast<void(__cdecl*)(Reference*)>(0x4EBB00);
+	void Reference::returnToStartingLocation() {
+		TES3_Reference_returnToStartCell(this);
+
+		const auto sourceCell = getCell();
+		if (!sourceCell) {
+			return;
+		}
+		Reference sourceReference;
+		sourceReference.sourceID = sourceID;
+		sourceReference.targetID = targetID;
+		for (auto sourceMod : std::views::reverse(DataHandler::get()->nonDynamicData->getActiveMods())) {
+			if (sourceCell->reloadReference(sourceMod, &sourceReference, targetID)) {
+				orientation = sourceReference.orientation;
+				relocate(sourceCell, &sourceReference.position, se::math::radiansToDegrees(orientation.z));
+				break;
+			}
+		}
 	}
 
 	bool Reference::clone() {

@@ -123,6 +123,7 @@ namespace TES3 {
 
 		void relocate(Cell * cell, const NI::Point3 * position, float rotation);
 		void relocateNoRotation(Cell* cell, const NI::Point3* position);
+		void returnToStartingLocation();
 		bool clone();
 		bool onCloseInventory();
 

@@ -367,6 +367,7 @@ namespace TES3 {
 		void notifyActorDeadOrDestroyed(MobileActor* mobileActor);
 		void removeFiredProjectiles(bool includeSpellProjectiles);
 		void resurrect(bool resetState, bool moveToStartingLocation);
+		void respawnAtStartingLocation();
 		void resurrect_lua(sol::table params);
 		void cleanupCollisionReference(Reference* reference);
 		void overrideHeadTrackingThisFrame(Reference* target);
