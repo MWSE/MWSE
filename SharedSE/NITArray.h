@@ -97,8 +97,8 @@ namespace NI {
 		constexpr iterator begin() noexcept { return storage; }
 		constexpr const_iterator begin() const noexcept { return storage; }
 		constexpr const_iterator cbegin() const noexcept { return begin(); }
-		constexpr iterator end() noexcept { return &storage[storageCount]; }
-		constexpr const_iterator end() const noexcept { return &storage[storageCount]; }
+		constexpr iterator end() noexcept { return &storage[endIndex]; }
+		constexpr const_iterator end() const noexcept { return &storage[endIndex]; }
 		constexpr const_iterator cend() const noexcept { return end(); }
 
 		constexpr reverse_iterator rbegin() noexcept { return std::make_reverse_iterator(end()); }
@@ -154,7 +154,7 @@ namespace NI {
 
 			// Change size to fit.
 			growByCount = other.growByCount;
-			setSize(other.size());
+			setSize(other.storageCount);
 
 			// Copy over values.
 			for (size_t i = 0; i < storageCount; ++i) {
@@ -243,7 +243,7 @@ namespace NI {
 		}
 
 		constexpr auto size() const noexcept {
-			return storageCount;
+			return endIndex;
 		}
 
 		constexpr bool empty() const noexcept {

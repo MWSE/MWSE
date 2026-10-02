@@ -5,6 +5,8 @@
 #include "TES3Reference.h"
 #include "TES3MobileObject.h"
 
+#include "NICollisionGroup.h"
+
 namespace mwse::lua {
 	template <typename T>
 	void setUserdataForTES3MobileObject(sol::usertype<T>& usertypeDefinition) {
@@ -15,6 +17,7 @@ namespace mwse::lua {
 		usertypeDefinition["cellX"] = sol::readonly_property(&TES3::MobileObject::cellX);
 		usertypeDefinition["cellY"] = sol::readonly_property(&TES3::MobileObject::cellY);
 		usertypeDefinition["collisionData"] = sol::readonly_property(&TES3::MobileObject::getCollisions_lua);
+		usertypeDefinition["collisionGroup"] = sol::readonly_property(&TES3::MobileObject::collisionGroup);
 		usertypeDefinition["height"] = &TES3::MobileObject::height;
 		usertypeDefinition["inventory"] = sol::readonly_property(&TES3::MobileObject::getInventory);
 		usertypeDefinition["lightEffectData"] = sol::readonly_property(&TES3::MobileObject::getLightEffectData);

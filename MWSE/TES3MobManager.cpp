@@ -155,7 +155,20 @@ namespace TES3 {
 			return;
 		}
 
-		const auto rootCollisionNode = reference->sceneNode ? reference->sceneNode->findRootCollisionNode() : nullptr;
+		// Nodes a collision group may hold for this reference.
+		NI::AVObject* const collisionNodes[] = {
+			reference->sceneNode.get(),
+			reference->sceneCollisionRoot.get(),
+			reference->sceneNode ? reference->sceneNode->findRootCollisionNode() : nullptr,
+		};
+		const auto removeCollidees = [&](NI::CollisionGroup* collisionGroup) {
+			for (const auto node : collisionNodes) {
+				if (node) {
+					collisionGroup->removeCollidee(node);
+				}
+			}
+		};
+
 		criticalSection.enter("MWSE:ProcessManager::cleanupCollisionReferences");
 
 		if (mobilePlayer) {
@@ -164,8 +177,8 @@ namespace TES3 {
 				if (mobilePlayer->reference == reference) {
 					mobilePlayer->collisionGroup->removeAll();
 				}
-				else if (rootCollisionNode) {
-					mobilePlayer->collisionGroup->removeCollidee(rootCollisionNode);
+				else {
+					removeCollidees(mobilePlayer->collisionGroup);
 				}
 			}
 		}
@@ -177,8 +190,8 @@ namespace TES3 {
 					if (planner->mobileActor->reference == reference) {
 						planner->mobileActor->collisionGroup->removeAll();
 					}
-					else if (rootCollisionNode) {
-						planner->mobileActor->collisionGroup->removeCollidee(rootCollisionNode);
+					else {
+						removeCollidees(planner->mobileActor->collisionGroup);
 					}
 				}
 			}
