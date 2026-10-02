@@ -68,12 +68,11 @@ namespace TES3 {
 
 	bool Misc::isGold() const {
 		auto goldData = GoldData::DATA_ARRAY;
-		for (auto i = 0U; i < GoldData::DATA_ARRAY_COUNT; ++i) {
-			if (goldData[i].object == this) {
-				return true;
+		return std::any_of(goldData, goldData + GoldData::DATA_ARRAY_COUNT, 
+			[this](const GoldData& goldData) {
+				return goldData.object == this;
 			}
-		}
-		return false;
+		);
 	}
 }
 

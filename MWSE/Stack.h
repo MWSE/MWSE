@@ -130,9 +130,7 @@ namespace mwse {
 			if (stack_top >= stack_size) {
 				stack_size += stack_grow_size;
 				StackItem_t* new_stack = new StackItem_t[stack_size];
-				for (size_t i = 0; i < stack_top; ++i) {
-					new_stack[i] = stack_storage[i];
-				}
+				std::copy(stack_storage, stack_storage + stack_top, new_stack);
 				delete[] stack_storage;
 				stack_storage = new_stack;
 			}

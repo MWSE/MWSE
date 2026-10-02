@@ -17,11 +17,9 @@ namespace se::cs {
 		}
 
 		if (settings.effect) {
-			for (const auto& effect : effects) {
-				if (effect.search(needle, settings, regex)) {
-					return true;
-				}
-			}
+			return std::ranges::any_of(effects, [&](const auto& effect) {
+				return effect.search(needle, settings, regex);
+			});
 		}
 
 		return false;
