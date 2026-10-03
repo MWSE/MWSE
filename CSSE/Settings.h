@@ -256,6 +256,14 @@ namespace se::cs {
 			toml::value into_toml() const;
 		} openmw;
 
+		struct ReferenceNumbers {
+			bool preserve = true;
+			bool remember_highest = true;
+
+			void from_toml(const toml::value& v);
+			toml::value into_toml() const;
+		} reference_numbers;
+
 		bool valid = true;
 		bool enabled = true;
 		toml::value loadedConfig = {};

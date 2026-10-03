@@ -553,6 +553,24 @@ namespace se::cs {
 	}
 
 	//
+	// Reference numbers
+	//
+
+	void Settings_t::ReferenceNumbers::from_toml(const toml::value& v) {
+		preserve = toml::find_or(v, "preserve", preserve);
+		remember_highest = toml::find_or(v, "remember_highest", remember_highest);
+	}
+
+	toml::value Settings_t::ReferenceNumbers::into_toml() const {
+		return toml::value(
+			{
+				{ "preserve", preserve },
+				{ "remember_highest", remember_highest },
+			}
+		);
+	}
+
+	//
 	//
 	//
 
@@ -613,6 +631,7 @@ namespace se::cs {
 		text_search = toml::find_or(v, "text_search", text_search);
 		test_environment = toml::find_or(v, "test_environment", test_environment);
 		openmw = toml::find_or(v, "openmw", openmw);
+		reference_numbers = toml::find_or(v, "reference_numbers", reference_numbers);
 
 		color_theme.packColors();
 	}
@@ -632,6 +651,7 @@ namespace se::cs {
 				{ "text_search", text_search },
 				{ "test_environment", test_environment },
 				{ "openmw", openmw },
+				{ "reference_numbers", reference_numbers },
 			}
 		);
 	}

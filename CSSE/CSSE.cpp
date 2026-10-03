@@ -37,6 +37,8 @@
 
 #include "TextureRenderer.h"
 
+#include "PatchReferenceNumbers.h"
+
 #include "DarkMode.h"
 #include "IconOverride.h"
 #include "MemoryUtil.h"
@@ -758,6 +760,7 @@ namespace se::cs {
 		dialog::use_report_window::installPatches();
 		dialog::layer_window::installPatches();
 		TextureRenderer::installPatches();
+		patch::reference_numbers::installPatches();
 	}
 
 	void CSSE::UpdateCurrentDirectory() const {
