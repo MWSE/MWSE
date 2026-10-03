@@ -37,6 +37,8 @@
 
 #include "TextureRenderer.h"
 
+#include "PatchReferenceNumbers.h"
+
 #include "DarkMode.h"
 #include "IconOverride.h"
 #include "MemoryUtil.h"
@@ -730,6 +732,9 @@ namespace se::cs {
 		// Patch: Save XSCL for references whose scale was manually changed to exactly 1.0.
 		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
 		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);
+
+		// Patch: Keep reference numbers (FRMR) of the active plugin stable between saves, so saved games don't break.
+		patch::reference_numbers::installPatches();
 
 		// Patch: Optimize NiDX8Renderer hash map lookups. Use NiDX8RendererHashBuckets buckets instead of 37.
 		constexpr DWORD NiDX8RendererHashBuckets = 4093; // Prime, ~16KB per map.

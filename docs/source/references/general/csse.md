@@ -60,6 +60,7 @@ Prefer to learn from videos? Danae has made [a non-exhaustive summary video of t
 * By default both dds and tga texture files are selectable in texture selection dialogs.
 * Attempts to open the CS .hlp file now instead redirect to the [Morrowind Modding Wiki mirror](https://tes3cs.pages.dev/) of the document.
 * Serialization improvements for reference scales. If a reference is scaled to 1.0 from another value, it will serialize.
+* Reference numbers (FRMR) of the active plugin are kept stable when saving. Vanilla renumbers all of the plugin's references on every save, so adding or deleting a single reference shifts the numbers of others and corrupts saved games that use the plugin (duplicated doors, missing walls, wrong container contents). Now existing references keep their number, new references get a number above the highest one the plugin has ever used, and numbers of deleted references are not reused. The highest used number per plugin is remembered in `csse_reference_numbers.txt`. This can be configured in the `[reference_numbers]` section of csse.toml.
 
 #### Testing from the Construction Set
 
