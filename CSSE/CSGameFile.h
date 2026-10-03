@@ -110,7 +110,7 @@ namespace se::cs {
 		int unknown_0x4E0;
 		int unknown_0x4E4;
 		GameFile** masters; // 0x4E8
-		DWORD lastReferenceNumber; // 0x4EC. Last reference number (FRMR) handed out to a new reference when saving.
+		DWORD lastReferenceNumber; // 0x4EC
 		int unknown_0x4F0;
 
 		bool getIsMasterFile() const;

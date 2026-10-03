@@ -78,11 +78,8 @@ namespace se::cs {
 			};
 		};
 		Attachment* firstAttachment; // 0x68
-		// Runtime form ID: (load order index << 24) | reference number. Only set for references loaded from a master file.
 		int sourceID; // 0x6C
-		// The reference number (FRMR) written when saving. Vanilla only keeps it for references loaded from a master file.
-		// See PatchReferenceNumbers.cpp.
-		int targetID; // 0x70
+		int targetID; // 0x70. FRMR written on save.
 		NI::Pointer<NI::AVObject> selectionWidget; // 0x74. NiLines
 
 		Attachment* getAttachment(Attachment::Type type) const;

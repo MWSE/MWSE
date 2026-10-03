@@ -257,10 +257,7 @@ namespace se::cs {
 		} openmw;
 
 		struct ReferenceNumbers {
-			// Keep the reference numbers (FRMR) of the active plugin's references stable between saves.
 			bool preserve = true;
-			// Remember the highest number given out per plugin in csse_reference_numbers.txt, so that numbers of
-			// deleted references are never reused, even after restarting the Construction Set.
 			bool remember_highest = true;
 
 			void from_toml(const toml::value& v);

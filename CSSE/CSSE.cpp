@@ -733,9 +733,6 @@ namespace se::cs {
 		overrideVirtualTableEnforced(0x6760D0, offsetof(Object_VirtualTable, setScale), 0x4049BC, reinterpret_cast<DWORD>(patch::PatchReferenceSetScale));
 		genJumpUnprotected(0x538902, reinterpret_cast<DWORD>(patch::PatchSaveReferenceScaleCheck), 0x18);
 
-		// Patch: Keep reference numbers (FRMR) of the active plugin stable between saves, so saved games don't break.
-		patch::reference_numbers::installPatches();
-
 		// Patch: Optimize NiDX8Renderer hash map lookups. Use NiDX8RendererHashBuckets buckets instead of 37.
 		constexpr DWORD NiDX8RendererHashBuckets = 4093; // Prime, ~16KB per map.
 		writeDoubleWordEnforced(0x58D08D, 37, NiDX8RendererHashBuckets);
@@ -763,6 +760,7 @@ namespace se::cs {
 		dialog::use_report_window::installPatches();
 		dialog::layer_window::installPatches();
 		TextureRenderer::installPatches();
+		patch::reference_numbers::installPatches();
 	}
 
 	void CSSE::UpdateCurrentDirectory() const {
