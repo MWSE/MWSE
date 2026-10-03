@@ -9,39 +9,37 @@ namespace mwse {
 	class xGetCombat : InstructionInterface_t {
 	public:
 		xGetCombat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetCombat xGetCombatInstance;
 
-	xGetCombat::xGetCombat() : mwse::InstructionInterface_t(OpCode::xGetCombat) {}
+	xGetCombat::xGetCombat() : InstructionInterface_t(OpCode::xGetCombat) {}
 
-	float xGetCombat::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetCombat::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get MACP record.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCombat: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCombat: No mach node found." << std::endl;
+				log::getLog() << "xGetCombat: No mach node found." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Push the reference of the combat target, or 0 if no target reference is found.
 		if (mobileObject->actionData.target && mobileObject->actionData.target->reference) {
-			mwse::Stack::getInstance().pushLong((long)mobileObject->actionData.target->reference);
+			stack.pushPointer(mobileObject->actionData.target->reference);
 		}
 		else {
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 		}
 
 		return 0.0f;

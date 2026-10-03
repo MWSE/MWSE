@@ -17,33 +17,31 @@ namespace mwse {
 	class xSetName : InstructionInterface_t {
 	public:
 		xSetName();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetName xSetNameInstance;
 
-	xSetName::xSetName() : mwse::InstructionInterface_t(OpCode::xSetName) {}
+	xSetName::xSetName() : InstructionInterface_t(OpCode::xSetName) {}
 
-	float xSetName::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetName::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter from the stack.
-		mwseString& name = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& name = virtualMachine.getString(stack.popLong());
 
 		// Enforce name length.
 		if (name.length() > 31) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetName: Given name length must be 31 characters or less." << std::endl;
+				log::getLog() << "xSetName: Given name length must be 31 characters or less." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(false);
+			stack.pushShort(false);
 			return 0.0f;
 		}
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetName: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushShort(false);
+			stack.pushShort(false);
 			return 0.0f;
 		}
 
@@ -51,9 +49,9 @@ namespace mwse {
 		TES3::BaseObject* recordGeneric = reference->baseObject;
 		if (recordGeneric == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetName: No record found for reference." << std::endl;
+				log::getLog() << "xSetName: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(false);
+			stack.pushShort(false);
 			return 0.0f;
 		}
 
@@ -106,9 +104,9 @@ namespace mwse {
 		// Bail out if we haven't found the name.
 		if (namePtr == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetName: Unsupported record format: " << recordType << "." << std::endl;
+				log::getLog() << "xSetName: Unsupported record format: " << recordType << "." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(false);
+			stack.pushShort(false);
 			return 0.0f;
 		}
 
@@ -120,7 +118,7 @@ namespace mwse {
 
 		strcpy(namePtr, name.c_str());
 
-		mwse::Stack::getInstance().pushShort(true);
+		stack.pushShort(true);
 		return 0.0f;
 	}
 }

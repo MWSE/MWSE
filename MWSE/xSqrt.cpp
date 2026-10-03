@@ -6,15 +6,16 @@ namespace mwse {
 	class xSqrt : InstructionInterface_t {
 	public:
 		xSqrt();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSqrt xSqrtInstance;
 
-	xSqrt::xSqrt() : mwse::InstructionInterface_t(OpCode::xSqrt) {}
+	xSqrt::xSqrt() : InstructionInterface_t(OpCode::xSqrt) {}
 
-	float xSqrt::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::sqrt(mwse::Stack::getInstance().popFloat()));
+	float xSqrt::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::sqrt(stack.popFloat()));
 		return 0.0f;
 	}
 }

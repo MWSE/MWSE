@@ -10,29 +10,30 @@ namespace mwse {
 	class xGetBaseMagicka : InstructionInterface_t {
 	public:
 		xGetBaseMagicka();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseMagicka xGetBaseMagickaInstance;
 
-	xGetBaseMagicka::xGetBaseMagicka() : mwse::InstructionInterface_t(OpCode::xGetBaseMagicka) {}
+	xGetBaseMagicka::xGetBaseMagicka() : InstructionInterface_t(OpCode::xGetBaseMagicka) {}
 
-	float xGetBaseMagicka::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseMagicka::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseMagicka: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseMagicka: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->magicka.base);
+		stack.pushFloat(mobileObject->magicka.base);
 
 		return 0.0f;
 	}

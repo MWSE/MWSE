@@ -7,18 +7,19 @@ namespace mwse {
 	class xRandomFloat : InstructionInterface_t {
 	public:
 		xRandomFloat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRandomFloat xRandomFloatInstance;
 
-	xRandomFloat::xRandomFloat() : mwse::InstructionInterface_t(OpCode::xRandomFloat) {}
+	xRandomFloat::xRandomFloat() : InstructionInterface_t(OpCode::xRandomFloat) {}
 
-	float xRandomFloat::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float min = mwse::Stack::getInstance().popFloat();
-		float max = mwse::Stack::getInstance().popFloat();
+	float xRandomFloat::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		float min = stack.popFloat();
+		float max = stack.popFloat();
 
-		mwse::Stack::getInstance().pushFloat(mwse::rng::getRandomFloat(min, max));
+		stack.pushFloat(rng::getRandomFloat(min, max));
 
 		return 0.0f;
 	}

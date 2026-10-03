@@ -6,15 +6,16 @@ namespace mwse {
 	class xArcCos : InstructionInterface_t {
 	public:
 		xArcCos();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xArcCos xArcCosInstance;
 
-	xArcCos::xArcCos() : mwse::InstructionInterface_t(OpCode::xArcCos) {}
+	xArcCos::xArcCos() : InstructionInterface_t(OpCode::xArcCos) {}
 
-	float xArcCos::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::acos(mwse::Stack::getInstance().popFloat()));
+	float xArcCos::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::acos(stack.popFloat()));
 		return 0.0f;
 	}
 }

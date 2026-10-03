@@ -10,37 +10,35 @@ namespace mwse {
 	class xGetBaseHeavyArmor : InstructionInterface_t {
 	public:
 		xGetBaseHeavyArmor();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseHeavyArmor xGetBaseHeavyArmorInstance;
 
-	xGetBaseHeavyArmor::xGetBaseHeavyArmor() : mwse::InstructionInterface_t(OpCode::xGetBaseHeavyArmor) {}
+	xGetBaseHeavyArmor::xGetBaseHeavyArmor() : InstructionInterface_t(OpCode::xGetBaseHeavyArmor) {}
 
-	float xGetBaseHeavyArmor::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseHeavyArmor::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseHeavyArmor: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseHeavyArmor: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseHeavyArmor: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::HeavyArmor].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::HeavyArmor].base);
 
 		return 0.0f;
 	}
