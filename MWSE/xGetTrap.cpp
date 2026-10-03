@@ -10,27 +10,25 @@ namespace mwse {
 	class xGetTrap : InstructionInterface_t {
 	public:
 		xGetTrap();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetTrap xGetTrapInstance;
 
-	xGetTrap::xGetTrap() : mwse::InstructionInterface_t(OpCode::xGetTrap) {}
+	xGetTrap::xGetTrap() : InstructionInterface_t(OpCode::xGetTrap) {}
 
-	float xGetTrap::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetTrap::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		char* id = nullptr;
 		char* name = nullptr;
 		short cost = 0;
 
 		// Get reference to what we're finding the trap of.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetTrap: Called on invalid reference." << std::endl;
-			}
-			Stack::getInstance().pushShort(cost);
-			Stack::getInstance().pushString(name);
-			Stack::getInstance().pushString(id);
+			stack.pushShort(cost);
+			stack.pushString(name);
+			stack.pushString(id);
 			return 0.0f;
 		}
 
@@ -57,9 +55,9 @@ namespace mwse {
 			}
 		}
 
-		Stack::getInstance().pushShort(cost);
-		Stack::getInstance().pushString(name);
-		Stack::getInstance().pushString(id);
+		stack.pushShort(cost);
+		stack.pushString(name);
+		stack.pushString(id);
 
 		return 0.0f;
 	}

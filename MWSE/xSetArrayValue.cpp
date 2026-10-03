@@ -7,27 +7,33 @@ namespace mwse {
 	class xSetArrayValue : InstructionInterface_t {
 	public:
 		xSetArrayValue();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetArrayValue xSetArrayValueInstance;
 
-	xSetArrayValue::xSetArrayValue() : mwse::InstructionInterface_t(OpCode::xSetArrayValue) {}
+	xSetArrayValue::xSetArrayValue() : InstructionInterface_t(OpCode::xSetArrayValue) {}
 
-	float xSetArrayValue::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 3) {
-			mwse::log::getLog() << "xSetArrayValue: Function called with too few arguments." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
+	float xSetArrayValue::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 3) {
+			log::getLog() << "xSetArrayValue: Function called with too few arguments." << std::endl;
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		long id = mwse::Stack::getInstance().popLong();
-		long index = mwse::Stack::getInstance().popLong();
-		long value = mwse::Stack::getInstance().popLong();
+		long id = stack.popLong();
+		long index = stack.popLong();
+		long value = stack.popLong();
 
-		short status = mwse::Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
+		if (index < 0) {
+			log::getLog() << "xSetArrayValue: Array index out of bounds. id: " << id << " index: " << index << std::endl;
+			stack.pushShort(0);
+			return 0.0f;
+		}
+		short status = Arrays::getInstance().setValue("xSetArrayValue", id, index, value);
 
-		mwse::Stack::getInstance().pushShort(status);
+		stack.pushShort(status);
 
 		return 0.0f;
 	}

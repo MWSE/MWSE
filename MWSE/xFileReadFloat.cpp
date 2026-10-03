@@ -7,43 +7,49 @@ namespace mwse {
 	class xFileReadFloat : InstructionInterface_t {
 	public:
 		xFileReadFloat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileReadFloat xFileReadFloatInstance;
 
-	xFileReadFloat::xFileReadFloat() : mwse::InstructionInterface_t(OpCode::xFileReadFloat) {}
+	xFileReadFloat::xFileReadFloat() : InstructionInterface_t(OpCode::xFileReadFloat) {}
 
-	float xFileReadFloat::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
-			mwse::log::getLog() << "xFileReadFloat: Function called with too few arguments." << std::endl;
+	float xFileReadFloat::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
+			log::getLog() << "xFileReadFloat: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
 		// Get arguments from the stack.
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long count = mwse::Stack::getInstance().popLong();
-
-		// Gather values into a temporary list, so they aren't in reverse order.
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		long count = stack.popLong();
 		long valuesRead = 0;
-		std::list<float> values;
+
+		if (count <= 0) {
+			log::getLog() << "xFileReadFloat: Provided 'count' needs to be a number larger than 0." << std::endl;
+			stack.pushLong(valuesRead);
+			return 0.0f;
+		}
+
+		// Gather values into a temporary vector so they can be pushed onto the stack in reverse order.
+		std::vector<float> values(count);
 		for (long i = 0; i < count; ++i) {
 			try {
-				float value = mwse::FileSystem::getInstance().readFloat(fileName);
-				values.push_front(value);
+				float value = FileSystem::getInstance().readValue<float>(fileName);
+				values.push_back(value);
 				valuesRead++;
 			}
 			catch (std::exception&) {
-				values.push_front(0.0f);
+				values.push_back(0.0f);
 			}
 		}
 
 		// Copy values from the temporary vector to the stack.
-		while (!values.empty()) {
-			mwse::Stack::getInstance().pushFloat(values.front());
-			values.pop_front();
+		for (const auto& v : std::views::reverse(values)) {
+			stack.pushFloat(v);
 		}
-		mwse::Stack::getInstance().pushLong(valuesRead);
+		stack.pushLong(valuesRead);
 
 		return 0.0f;
 	}

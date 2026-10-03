@@ -6,18 +6,19 @@ namespace mwse {
 	class xOr : InstructionInterface_t {
 	public:
 		xOr();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xOr xOrInstance;
 
-	xOr::xOr() : mwse::InstructionInterface_t(OpCode::xOr) {}
+	xOr::xOr() : InstructionInterface_t(OpCode::xOr) {}
 
-	float xOr::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long param1 = mwse::Stack::getInstance().popLong();
-		long param2 = mwse::Stack::getInstance().popLong();
+	float xOr::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long param1 = stack.popLong();
+		long param2 = stack.popLong();
 
-		mwse::Stack::getInstance().pushLong(param1 || param2);
+		stack.pushLong(param1 || param2);
 
 		return 0.0f;
 	}

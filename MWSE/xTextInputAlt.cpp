@@ -10,7 +10,7 @@ namespace mwse {
 	class xTextInputAlt : InstructionInterface_t {
 	public:
 		xTextInputAlt();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		bool GetKeyIsPressed(int VK_key);
@@ -18,7 +18,7 @@ namespace mwse {
 
 	static xTextInputAlt xTextInputAltInstance;
 
-	xTextInputAlt::xTextInputAlt() : mwse::InstructionInterface_t(OpCode::xTextInputAlt) {}
+	xTextInputAlt::xTextInputAlt() : InstructionInterface_t(OpCode::xTextInputAlt) {}
 
 	static std::map<int, char> keyCharMap;
 
@@ -26,12 +26,13 @@ namespace mwse {
 		return BITMASK_TEST(GetAsyncKeyState(VK_key), 0x8001);
 	}
 
-	float xTextInputAlt::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xTextInputAlt::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// 1st parameter: Message Id.
-		mwseString& message = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& message = virtualMachine.getString(stack.popLong());
 
 		// 2nd parameter: Key to use to end the input stream.
-		long endCode = mwse::Stack::getInstance().popLong();
+		long endCode = stack.popLong();
 
 		// The default endcode is return.
 		if (endCode == 0) {
@@ -40,8 +41,8 @@ namespace mwse {
 
 		// Determine if the end keycode is down, and break out if so.
 		if (GetKeyIsPressed(endCode)) {
-			mwse::Stack::getInstance().pushString(message);
-			mwse::Stack::getInstance().pushLong(message.length());
+			stack.pushString(message);
+			stack.pushLong(message.length());
 			return 0.0f;
 		}
 
@@ -50,24 +51,24 @@ namespace mwse {
 			if (message.length() > 0) {
 				message.erase(message.end() - 1);
 			}
-			mwse::Stack::getInstance().pushString(message);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushString(message);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// If the enter key is pressed, insert a newline.
 		if (GetKeyIsPressed(VK_RETURN)) {
 			message.append("\r\n");
-			mwse::Stack::getInstance().pushString(message);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushString(message);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Handle spaces.
 		if (GetKeyIsPressed(VK_SPACE)) {
 			message.append(" ");
-			mwse::Stack::getInstance().pushString(message);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushString(message);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -83,8 +84,8 @@ namespace mwse {
 
 				if (character > 0) {
 					message.push_back(character);
-					mwse::Stack::getInstance().pushString(message);
-					mwse::Stack::getInstance().pushLong(0);
+					stack.pushString(message);
+					stack.pushLong(0);
 					return 0.0f;
 				}
 			}

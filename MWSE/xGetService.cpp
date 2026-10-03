@@ -12,26 +12,24 @@ namespace mwse {
 	class xGetService : InstructionInterface_t {
 	public:
 		xGetService();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetService xGetServiceInstance;
 
-	xGetService::xGetService() : mwse::InstructionInterface_t(OpCode::xGetService) {}
+	xGetService::xGetService() : InstructionInterface_t(OpCode::xGetService) {}
 
-	float xGetService::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetService::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetRace: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		long flags = 0;
-		long mask = mwse::Stack::getInstance().popLong();
+		long mask = stack.popLong();
 
 		// Get the AI configuration from the NPC;
 		TES3::AIConfig* aiConfig = reference->baseObject->getAIConfig();
@@ -40,11 +38,11 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetService: Could not resolve AI configuration." << std::endl;
+				log::getLog() << "xGetService: Could not resolve AI configuration." << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(flags);
+		stack.pushLong(flags);
 
 		return 0.0f;
 	}

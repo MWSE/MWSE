@@ -71,6 +71,12 @@ namespace mwse {
 			}
 		}
 
+		template <typename T>
+		requires std::is_pointer_v<T>
+		void pushPointer(T object) {
+			pushLong(pointerToLong(object));
+		}
+
 		char popByte(void) {
 			return static_cast<char>(pop());
 		}
@@ -81,6 +87,12 @@ namespace mwse {
 
 		long popLong(void) {
 			return static_cast<long>(pop());
+		}
+
+		template <typename T>
+		requires std::is_pointer_v<T>
+		T popPointer() {
+			return pointerFromLong<T>(popLong());
 		}
 
 		float popFloat(void) {
@@ -162,6 +174,18 @@ namespace mwse {
 			}
 
 			return stack_storage[stack_top];
+		}
+
+		template <typename T>
+		requires std::is_pointer_v<T>
+		static T pointerFromLong(long value) {
+			return reinterpret_cast<T>(static_cast<std::uintptr_t>(value));
+		}
+
+		template <typename T>
+		requires std::is_pointer_v<T>
+		static long pointerToLong(T value) {
+			return static_cast<long>(reinterpret_cast<std::uintptr_t>(value));
 		}
 
 		StackItem_t* stack_storage;  // dynamically sized array

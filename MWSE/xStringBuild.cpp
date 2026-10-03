@@ -8,25 +8,26 @@ namespace mwse {
 	class xStringBuild : InstructionInterface_t {
 	public:
 		xStringBuild();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringBuild xStringBuildInstance;
 
-	xStringBuild::xStringBuild() : mwse::InstructionInterface_t(OpCode::xStringBuild) {}
+	xStringBuild::xStringBuild() : InstructionInterface_t(OpCode::xStringBuild) {}
 
-	float xStringBuild::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& format = virtualMachine.getString(Stack::getInstance().popLong());
+	float xStringBuild::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		bool suppressNull = false;
 		std::string badCodes;
 
 		std::string result = se::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
 		if (!badCodes.empty()) {
-			mwse::log::getLog() << "xLogMessage: bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << result << "\"" << badCodes << std::endl;
+			log::getLog() << "xLogMessage: bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << result << "\"" << badCodes << std::endl;
 		}
 
-		mwse::Stack::getInstance().pushString(result);
+		stack.pushString(result);
 
 		return 0.0f;
 	}

@@ -8,21 +8,19 @@ namespace mwse {
 	class xGetName : InstructionInterface_t {
 	public:
 		xGetName();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetName xGetNameInstance;
 
-	xGetName::xGetName() : mwse::InstructionInterface_t(OpCode::xGetName) {}
+	xGetName::xGetName() : InstructionInterface_t(OpCode::xGetName) {}
 
-	float xGetName::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetName::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetName: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -35,11 +33,11 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetName: Could not obtain record from reference." << std::endl;
+				log::getLog() << "xGetName: Could not obtain record from reference." << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushString(name);
+		stack.pushString(name);
 
 		return 0.0f;
 	}
