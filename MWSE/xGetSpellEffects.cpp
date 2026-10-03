@@ -10,24 +10,25 @@ namespace mwse {
 	class xGetSpellEffects : InstructionInterface_t {
 	public:
 		xGetSpellEffects();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetSpellEffects xGetSpellEffectsInstance;
 
-	xGetSpellEffects::xGetSpellEffects() : mwse::InstructionInterface_t(OpCode::xGetSpellEffects) {}
+	xGetSpellEffects::xGetSpellEffects() : InstructionInterface_t(OpCode::xGetSpellEffects) {}
 
-	float xGetSpellEffects::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSpellEffects::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(stack.popLong());
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellEffects: Called on invalid reference." << std::endl;
+				log::getLog() << "xGetSpellEffects: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -35,17 +36,17 @@ namespace mwse {
 		TES3::BaseObject* spellTemplate = virtualMachine.getTemplate(id.c_str());
 		if (spellTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellEffects: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xGetSpellEffects: No template found with id '" << id << "'." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		bool result = mwse::mwscript::GetSpellEffects(script, reference, spellTemplate);
+		bool result = mwscript::GetSpellEffects(script, reference, spellTemplate);
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 
 		return 0.0f;
 	}

@@ -10,32 +10,33 @@ namespace mwse {
 	class xPosition : InstructionInterface_t {
 	public:
 		xPosition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xPosition xPositionInstance;
 
-	xPosition::xPosition() : mwse::InstructionInterface_t(OpCode::xPosition) {}
+	xPosition::xPosition() : InstructionInterface_t(OpCode::xPosition) {}
 
-	float xPosition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xPosition::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float x = mwse::Stack::getInstance().popFloat();
-		float y = mwse::Stack::getInstance().popFloat();
-		float z = mwse::Stack::getInstance().popFloat();
-		float rotation = mwse::Stack::getInstance().popFloat();
+		float x = stack.popFloat();
+		float y = stack.popFloat();
+		float z = stack.popFloat();
+		float rotation = stack.popFloat();
 
 		// Get other context information for original opcode.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xPosition: Called on invalid reference." << std::endl;
+				log::getLog() << "xPosition: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::Position(script, reference, x, y, z, rotation);
+		mwscript::Position(script, reference, x, y, z, rotation);
 
 		return 0.0f;
 	}

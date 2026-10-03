@@ -12,7 +12,7 @@ namespace mwse {
 	class xGetKeyBind : InstructionInterface_t {
 	public:
 		xGetKeyBind();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	enum xGetKeyBindReturnType {
@@ -22,21 +22,22 @@ namespace mwse {
 
 	static xGetKeyBind xGetKeyBindInstance;
 
-	xGetKeyBind::xGetKeyBind() : mwse::InstructionInterface_t(OpCode::xGetKeyBind) {}
+	xGetKeyBind::xGetKeyBind() : InstructionInterface_t(OpCode::xGetKeyBind) {}
 
-	float xGetKeyBind::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetKeyBind::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long inputIndex = Stack::getInstance().popLong();
+		long inputIndex = stack.popLong();
 
 		// Validate index.
 		if (inputIndex < TES3::KeyBind::FirstKey || inputIndex > TES3::KeyBind::LastKey) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetKeyBind: Index out of bounds." << std::endl;
+				log::getLog() << "xGetKeyBind: Index out of bounds." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -72,14 +73,14 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetKeyBind: Device type " << scanDevice << " cannot be converted." << std::endl;
+				log::getLog() << "xGetKeyBind: Device type " << scanDevice << " cannot be converted." << std::endl;
 			}
 		}
 
 		// Return values.
-		mwse::Stack::getInstance().pushLong(keyCode);
-		mwse::Stack::getInstance().pushLong(scanDevice);
-		mwse::Stack::getInstance().pushLong(scanCode);
+		stack.pushLong(keyCode);
+		stack.pushLong(scanDevice);
+		stack.pushLong(scanCode);
 
 		return 0.0f;
 	}

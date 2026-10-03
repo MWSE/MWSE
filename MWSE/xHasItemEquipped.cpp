@@ -10,24 +10,25 @@ namespace mwse {
 	class xHasItemEquipped : InstructionInterface_t {
 	public:
 		xHasItemEquipped();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xHasItemEquipped xHasItemEquippedInstance;
 
-	xHasItemEquipped::xHasItemEquipped() : mwse::InstructionInterface_t(OpCode::xHasItemEquipped) {}
+	xHasItemEquipped::xHasItemEquipped() : InstructionInterface_t(OpCode::xHasItemEquipped) {}
 
-	float xHasItemEquipped::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xHasItemEquipped::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(stack.popLong());
 
 		// Get script reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xHasItemEquipped: Called on invalid reference." << std::endl;
+				log::getLog() << "xHasItemEquipped: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -35,17 +36,17 @@ namespace mwse {
 		TES3::BaseObject* itemTemplate = virtualMachine.getTemplate(id.c_str());
 		if (itemTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xHasItemEquipped: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xHasItemEquipped: No template found with id '" << id << "'." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		bool result = mwse::mwscript::HasItemEquipped(script, reference, itemTemplate);
+		bool result = mwscript::HasItemEquipped(script, reference, itemTemplate);
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 
 		return 0.0f;
 	}

@@ -6,7 +6,7 @@ namespace mwse {
 	class xSetRef : public InstructionInterface_t {
 	public:
 		xSetRef();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetRef xSetRefInstance;
@@ -14,7 +14,7 @@ namespace mwse {
 	xSetRef::xSetRef() : InstructionInterface_t(OpCode::xSetRef) {}
 
 	float xSetRef::execute(VMExecuteInterface& virtualMachine) {
-		TES3::Reference* reference = reinterpret_cast<TES3::Reference*>(Stack::getInstance().popLong());
+		TES3::Reference* reference = Stack::getInstance().popPointer<TES3::Reference*>();
 		virtualMachine.setReference(reference);
 		return 0.0f;
 	}

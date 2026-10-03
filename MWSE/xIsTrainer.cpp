@@ -11,21 +11,22 @@ namespace mwse {
 	class xIsTrainer : InstructionInterface_t {
 	public:
 		xIsTrainer();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xIsTrainer xIsTrainerInstance;
 
-	xIsTrainer::xIsTrainer() : mwse::InstructionInterface_t(OpCode::xIsTrainer) {}
+	xIsTrainer::xIsTrainer() : InstructionInterface_t(OpCode::xIsTrainer) {}
 
-	float xIsTrainer::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xIsTrainer::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xIsTrader: Called on invalid reference." << std::endl;
+				log::getLog() << "xIsTrader: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -45,11 +46,11 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xIsTrainer: Failed to get AI configuration for target." << std::endl;
+				log::getLog() << "xIsTrainer: Failed to get AI configuration for target." << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(npcServiceFlags | classServiceFlags);
+		stack.pushLong(npcServiceFlags | classServiceFlags);
 
 		return 0.0f;
 	}

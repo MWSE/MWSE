@@ -8,18 +8,19 @@ namespace mwse {
 	class xStringCapture : InstructionInterface_t {
 	public:
 		xStringCapture();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xStringCapture xStringCaptureInstance;
 
-	xStringCapture::xStringCapture() : mwse::InstructionInterface_t(OpCode::xStringCapture) {}
+	xStringCapture::xStringCapture() : InstructionInterface_t(OpCode::xStringCapture) {}
 
-	float xStringCapture::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xStringCapture::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters from stack.
-		mwseString& string = virtualMachine.getString(Stack::getInstance().popLong());
-		mwseString& pattern = virtualMachine.getString(Stack::getInstance().popLong());
-		long desiredMatches = Stack::getInstance().popLong();
+		mwseString& string = virtualMachine.getString(stack.popLong());
+		mwseString& pattern = virtualMachine.getString(stack.popLong());
+		long desiredMatches = stack.popLong();
 
 		// Go and try to get all of our matches, to a limit of the count given to us as our 3rd parameter.
 		long matchesReturned = 0;
@@ -36,18 +37,18 @@ namespace mwse {
 
 					// Bring the match into string storage and push it back to mwscript.
 					mwseString& match = se::string::store::getOrCreate(regex_matches[i].str());
-					mwse::Stack::getInstance().pushString(match);
+					stack.pushString(match);
 					matchesReturned++;
 				}
 			}
 		}
 		catch (boost::regex_error& e) {
-			mwse::log::getLog() << "xStringCapture: A regex exception has occurred. " << e.what() << std::endl;
+			log::getLog() << "xStringCapture: A regex exception has occurred. " << e.what() << std::endl;
 		}
 
 		// If we didn't get enough matches, pad it out with zeros.
 		while (matchesReturned < desiredMatches) {
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			matchesReturned++;
 		}
 

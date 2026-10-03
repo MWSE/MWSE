@@ -10,26 +10,27 @@ namespace mwse {
 	class xIsFemale : InstructionInterface_t {
 	public:
 		xIsFemale();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xIsFemale xIsFemaleInstance;
 
-	xIsFemale::xIsFemale() : mwse::InstructionInterface_t(OpCode::xIsFemale) {}
+	xIsFemale::xIsFemale() : InstructionInterface_t(OpCode::xIsFemale) {}
 
-	float xIsFemale::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xIsFemale::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xIsFemale: Called on invalid reference." << std::endl;
+				log::getLog() << "xIsFemale: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		long isFemale = reference->baseObject->isFemale();
-		mwse::Stack::getInstance().pushLong(isFemale);
+		stack.pushLong(isFemale);
 
 		return 0.0f;
 	}

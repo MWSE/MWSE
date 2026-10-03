@@ -10,17 +10,18 @@ namespace mwse {
 	class xGetSpellEffectInfo : InstructionInterface_t {
 	public:
 		xGetSpellEffectInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetSpellEffectInfo xGetSpellEffectInfoInstance;
 
-	xGetSpellEffectInfo::xGetSpellEffectInfo() : mwse::InstructionInterface_t(OpCode::xGetSpellEffectInfo) {}
+	xGetSpellEffectInfo::xGetSpellEffectInfo() : InstructionInterface_t(OpCode::xGetSpellEffectInfo) {}
 
-	float xGetSpellEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSpellEffectInfo::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& effectId = virtualMachine.getString(Stack::getInstance().popLong());
-		short effectIndex = Stack::getInstance().popShort();
+		mwseString& effectId = virtualMachine.getString(stack.popLong());
+		short effectIndex = stack.popShort();
 
 		// Return values.
 		long effectEnumId = TES3::EffectID::None;
@@ -48,22 +49,22 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetSpellEffectInfo: No spell found with id '" << effectId << "'." << std::endl;
+					log::getLog() << "xGetSpellEffectInfo: No spell found with id '" << effectId << "'." << std::endl;
 				}
 			}
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSpellEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
+				log::getLog() << "xGetSpellEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(magMax);
-		mwse::Stack::getInstance().pushLong(magMin);
-		mwse::Stack::getInstance().pushLong(duration);
-		mwse::Stack::getInstance().pushLong(area);
-		mwse::Stack::getInstance().pushLong(rangeType);
-		mwse::Stack::getInstance().pushLong(effectEnumId);
+		stack.pushLong(magMax);
+		stack.pushLong(magMin);
+		stack.pushLong(duration);
+		stack.pushLong(area);
+		stack.pushLong(rangeType);
+		stack.pushLong(effectEnumId);
 
 		return 0.0f;
 	}
