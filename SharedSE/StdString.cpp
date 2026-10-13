@@ -1,5 +1,6 @@
 #include "StdString.h"
 
+#include "Config.h"
 #include "ExceptionUtil.h"
 #include "MemoryUtil.h"
 
@@ -23,8 +24,8 @@ namespace se {
 	}
 
 	StdString::~StdString() {
-#if defined(SE_TARGETS_MW) && SE_TARGETS_MW == 1
-		const auto TES3_StdString_dtor = reinterpret_cast<void(__thiscall**)(StdString*)>(0x7461C4);
+#if defined(SE_STDSTRING_DTOR) && SE_STDSTRING_DTOR > 0
+		const auto TES3_StdString_dtor = reinterpret_cast<void(__thiscall**)(StdString*)>(SE_STDSTRING_DTOR);
 		(*TES3_StdString_dtor)(this);
 #else
 		throw not_implemented_exception();

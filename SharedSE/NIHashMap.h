@@ -19,6 +19,8 @@ namespace NI {
 				};
 			};
 			Node* nextNode; // 0x0 + sizeof(K) + sizeof(V) + alignment
+
+			~Node() noexcept {}
 		};
 		struct VirtualTable {
 			void(__thiscall* destructor)(HashMap<K, V>*, bool); // 0x0
