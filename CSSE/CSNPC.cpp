@@ -35,9 +35,9 @@ namespace se::cs {
 		}
 
 		// Sort the array in descending order based on the second index (skill level)
-		std::sort(trainingSkills.begin(), trainingSkills.end(), 
-			[](const std::vector<int>& above, const std::vector<int>& below) {
-				return (above[1] > below[1]);
+		std::ranges::sort(trainingSkills, std::ranges::greater{}, 
+			[](const std::vector<int>& skill) {
+				return skill[1];
 			});
 
 		// Construct the skill string, ex: "Alchemy(100), Blunt Weapon(90), Long Blade(60)"

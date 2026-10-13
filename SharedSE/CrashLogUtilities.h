@@ -18,7 +18,7 @@ inline std::string& SanitizeStringFromBadData(std::string& str) {
 	str.erase(first_nonprintable, str.end());
 
 	// Replace any newlines/tabs with spaces.
-	std::replace_if(str.begin(), str.end(), [](char c) { return std::isspace(c); }, ' ');
+	std::ranges::replace_if(str, [](char c) { return std::isspace(c); }, ' ');
 
 	return str;
 }

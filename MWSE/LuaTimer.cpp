@@ -90,11 +90,9 @@ namespace mwse::lua {
 		}
 
 		// Remove from the active timer list.
-		auto result = std::find(m_ActiveTimers.begin(), m_ActiveTimers.end(), timer);
-		if (result == m_ActiveTimers.end()) {
+		if (std::erase(m_ActiveTimers, timer) == 0) {
 			return false;
 		}
-		m_ActiveTimers.erase(result);
 
 		// And add it to the paused list.
 		m_PausedTimers.insert(timer);
@@ -150,12 +148,7 @@ namespace mwse::lua {
 
 		// Remove from the active list.
 		if (previousState == TimerState::Active) {
-			auto position = std::find(m_ActiveTimers.begin(), m_ActiveTimers.end(), timer);
-			if (position == m_ActiveTimers.end()) {
-				return false;
-			}
-			m_ActiveTimers.erase(position);
-			return true;
+			return std::erase(m_ActiveTimers, timer) == 1;
 		}
 
 		// Remove from the paused timer list.
@@ -234,7 +227,7 @@ namespace mwse::lua {
 	}
 
 	std::vector<std::shared_ptr<Timer>>::iterator TimerController::insertActiveTimer(std::shared_ptr<Timer> timer) {
-		auto position = std::upper_bound(m_ActiveTimers.begin(), m_ActiveTimers.end(), timer, comparer);
+		auto position = std::ranges::upper_bound(m_ActiveTimers, timer, comparer);
 		return m_ActiveTimers.insert(position, timer);
 	}
 
@@ -242,12 +235,10 @@ namespace mwse::lua {
 		const auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
 
 		// Remove from current position.
-		auto position = std::find(m_ActiveTimers.begin(), m_ActiveTimers.end(), timer);
-		if (position == m_ActiveTimers.end()) {
+		if (std::erase(m_ActiveTimers, timer) == 0) {
 			return;
 		}
-		m_ActiveTimers.erase(position);
-
+		
 		// Then insert it back in.
 		insertActiveTimer(timer);
 	}

@@ -199,49 +199,47 @@ namespace NI {
 
 		// Land records get sorted to favor more influential lights.
 		if (isLand) {
-			std::sort(dynamicEffectsBuffer.begin(), dynamicEffectsBuffer.end(),
-				[&](const DynamicEffect* a, const DynamicEffect* b) -> bool {
-					// Lights can be sorted by their type index.
-					const auto aType = a->getType();
-					const auto bType = b->getType();
-					if (aType != bType) {
-						return aType < bType;
-					}
+			std::ranges::sort(dynamicEffectsBuffer, [&](const DynamicEffect* a, const DynamicEffect* b) -> bool {
+				// Lights can be sorted by their type index.
+				const auto aType = a->getType();
+				const auto bType = b->getType();
+				if (aType != bType) {
+					return aType < bType;
+				}
 
-					// From here on we only care about point lights.
-					if (aType != DynamicEffect::TYPE_POINT_LIGHT) {
-						return false;
-					}
+				// From here on we only care about point lights.
+				if (aType != DynamicEffect::TYPE_POINT_LIGHT) {
+					return false;
+				}
 
-					const auto aLight = static_cast<const PointLight*>(a);
-					const auto bLight = static_cast<const PointLight*>(b);
-					return aLight->getSortWeight() > bLight->getSortWeight();
-				});
+				const auto aLight = static_cast<const PointLight*>(a);
+				const auto bLight = static_cast<const PointLight*>(b);
+				return aLight->getSortWeight() > bLight->getSortWeight();
+			});
 		}
 		// Everything else gets sorted by distance.
 		else {
-			std::sort(dynamicEffectsBuffer.begin(), dynamicEffectsBuffer.end(),
-				[&](const DynamicEffect* a, const DynamicEffect* b) -> bool {
-					// Lights can be sorted by their type index.
-					const auto aType = a->getType();
-					const auto bType = b->getType();
-					if (aType != bType) {
-						return aType < bType;
-					}
+			std::ranges::sort(dynamicEffectsBuffer, [&](const DynamicEffect* a, const DynamicEffect* b) -> bool {
+				// Lights can be sorted by their type index.
+				const auto aType = a->getType();
+				const auto bType = b->getType();
+				if (aType != bType) {
+					return aType < bType;
+				}
 
-					// From here on we only care about point lights.
-					if (aType != DynamicEffect::TYPE_POINT_LIGHT) {
-						return false;
-					}
+				// From here on we only care about point lights.
+				if (aType != DynamicEffect::TYPE_POINT_LIGHT) {
+					return false;
+				}
 
-					const auto aLight = static_cast<const PointLight*>(a);
-					const auto bLight = static_cast<const PointLight*>(b);
-					const auto aDistance = aLight->worldTransform.translation.distance(&getWorldBound()->center);
-					const auto aRadius = aLight->getRadius();
-					const auto bDistance = bLight->worldTransform.translation.distance(&getWorldBound()->center);
-					const auto bRadius = bLight->getRadius();
-					return aRadius * aDistance > bRadius * bDistance;
-				});
+				const auto aLight = static_cast<const PointLight*>(a);
+				const auto bLight = static_cast<const PointLight*>(b);
+				const auto aDistance = aLight->worldTransform.translation.distance(&getWorldBound()->center);
+				const auto aRadius = aLight->getRadius();
+				const auto bDistance = bLight->worldTransform.translation.distance(&getWorldBound()->center);
+				const auto bRadius = bLight->getRadius();
+				return aRadius * aDistance > bRadius * bDistance;
+			});
 		}
 
 		// Rebuild the linked list.

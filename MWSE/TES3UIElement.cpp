@@ -755,7 +755,7 @@ namespace TES3::UI {
 			std::string& path = value.value();
 
 			// Sanitize path.
-			std::replace(path.begin(), path.end(), '/', '\\');
+			std::ranges::replace(path, '/', '\\');
 
 			setIcon(path.c_str());
 		}
@@ -1448,7 +1448,7 @@ namespace TES3::UI {
 
 		if (!path.empty()) {
 			// Sanitize path.
-			std::replace(path.begin(), path.end(), '/', '\\');
+			std::ranges::replace(path, '/', '\\');
 
 			// Make sure the file exists.
 			if (mwse::tes3::resolveAssetPath(path.c_str()) == 0) {
@@ -1471,7 +1471,7 @@ namespace TES3::UI {
 		std::string path = mwse::lua::getOptionalParam<const char*>(params, "path", "");
 
 		// Sanitize path.
-		std::replace(path.begin(), path.end(), '/', '\\');
+		std::ranges::replace(path, '/', '\\');
 
 		return createNif(id, path.c_str());
 	}
