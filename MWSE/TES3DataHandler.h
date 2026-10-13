@@ -386,6 +386,7 @@ namespace TES3 {
 		// Other related this-call functions.
 		//
 
+		void dtor();
 		NI::Point3 getLastExteriorPosition() const;
 		float getLowestZInCurrentCell() const;
 

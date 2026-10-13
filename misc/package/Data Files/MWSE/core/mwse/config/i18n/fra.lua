@@ -31,6 +31,8 @@ return {
 	["useSkinnedAccurateActivationRaytests.description"] = "Si cette option est activée, le raytest de cible d'activation du joueur sera plus précis autour des acteurs skinnés. Ceci peut avoir un impact sur les performances dans des situations complexes.",
 	["suppressUselessWarnings.label"] = "Supprimer les avertissements inutiles ?",
 	["suppressUselessWarnings.description"] = "Si cette option est activée, le message d'avertissement au lancement du jeu concernant des fichiers maîtres ne correspondant pas pour certains plugins sera désactivé. Cet avertissement était presque systématiquement présent sur une installation moddée et invite à cliquer sur le bouton Yes to All, ce qui cache des avertissements importants.",
+	["bufferExitWarnings.label"] = "Écrire les avertissements de fermeture en une fois ?",
+	["bufferExitWarnings.description"] = "Si cette option est activée, les avertissements que le jeu écrit à sa fermeture, la liste des textures et des modèles encore chargés, sont écrits dans Warnings.txt en une seule ouverture du fichier, au lieu d'une par ligne. Le jeu se ferme ainsi beaucoup plus vite sous Mod Organizer. Le contenu de Warnings.txt ne change pas.",
 	["replaceLightSorting.label"] = "Remplacer le tri des lumières ?",
 	["replaceLightSorting.description"] = "Si cette option est activée, la méthode par défaut de priorisation des lumières affectant un modèle est remplacée par une nouvelle méthode. Ceci réduit grandement la quantité de faux raccords dans le paysage ainsi que la fréquence d'apparition brusque des lumières, mais peut diminuer l'impact des torches équipées dans certains environnements.",
 }
