@@ -101,6 +101,11 @@ namespace TES3 {
 		}
 	}
 
+	const auto TES3_Cell_reloadReference = reinterpret_cast<bool(__thiscall*)(Cell*, GameFile*, Reference*, unsigned int)>(0x4E0AB0);
+	bool Cell::reloadReference(GameFile* sourceFile, Reference* reference, unsigned int targetID) {
+		return TES3_Cell_reloadReference(this, sourceFile, reference, targetID);
+	}
+
 	const auto TES3_Cell_getOrCreateActivatorsNode = reinterpret_cast<NI::Node*(__thiscall*)(Cell*)>(0x4E2680);
 	NI::Node* Cell::getOrCreateActivatorsNode() {
 		return TES3_Cell_getOrCreateActivatorsNode(this);
