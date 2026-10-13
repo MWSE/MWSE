@@ -6,6 +6,4 @@ namespace mwse::patch {
 	void installPostInitializationPatches();
 
 	void uninstallPatches();
-
-	bool installMiniDumpHook();
 }

@@ -6,6 +6,7 @@
 #include "TES3Util.h"
 #include "CodePatchUtil.h"
 #include "PatchUtil.h"
+#include "Minidump.h"
 #include "MWSEDefs.h"
 #include "BuildDate.h"
 
@@ -69,7 +70,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
 #endif
 
 		// Before we do anything else, ensure that we can make minidumps.
-		if (!mwse::patch::installMiniDumpHook()) {
+		if (!mwse::minidump::installHook()) {
 			mwse::log::getLog() << "Warning: Unable to hook minidump! Crash dumps will be unavailable." << std::endl;
 		}
 
