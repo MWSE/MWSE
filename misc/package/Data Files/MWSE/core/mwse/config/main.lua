@@ -180,6 +180,16 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("bufferExitWarnings.label"),
+					description = i18n("bufferExitWarnings.description"),
+					variable = {
+						id = "BufferExitWarnings",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("replaceLightSorting.label"),
 					description = i18n("replaceLightSorting.description"),
 					variable = {
