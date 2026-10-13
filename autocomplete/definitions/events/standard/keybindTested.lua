@@ -1,6 +1,6 @@
 return {
 	type = "event",
-	description = "This event fires whenever a keybind is tested by the game. A keybind test is often used to see if a button is pressed, but it can also be done to see if an input was toggled or released. Blocking this event is equivalent to setting the `result` event data to false.",
+	description = "This event fires whenever a keybind is tested by the game. A keybind test is often used to see if a button is pressed, but it can also be done to see if an input was toggled or released. Blocking this event is equivalent to setting the `result` event data to false. To stop lower-priority callbacks while preserving the current result and vanilla keybind handling, set `e.claim = true`; do not return `false`, because that also blocks the event and forces `result` to false.",
 	eventData = {
 		["keybind"] = {
 			type = "tes3.keybind",
