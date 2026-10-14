@@ -21,6 +21,10 @@ namespace TES3 {
 		// Custom functions.
 		//
 
+		void simulate(float transitionScalar, float deltaTime);
+		void transition();
+		void unload();
+
 		bool setRainLoopSoundID(const char* id);
 
 	};

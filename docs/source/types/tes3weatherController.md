@@ -582,6 +582,17 @@ Absolute in-game hour used as the sunset reference. Each ambient, fog, sky, and 
 
 ***
 
+### `thunderFlashIntensity`
+<div class="search_terms" style="display: none">thunderflashintensity</div>
+
+The active thunder flash intensity.
+
+**Returns**:
+
+* `result` (number)
+
+***
+
 ### `timescaleClouds`
 <div class="search_terms" style="display: none">timescaleclouds</div>
 
