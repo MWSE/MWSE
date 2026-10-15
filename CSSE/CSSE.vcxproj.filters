@@ -90,6 +90,9 @@
     <ClCompile Include="CSLand.cpp">
       <Filter>Source Files\CS</Filter>
     </ClCompile>
+    <ClCompile Include="PatchReferenceNumbers.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
     <ClCompile Include="PathUtil.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
@@ -426,6 +429,9 @@
     </ClInclude>
     <ClInclude Include="CSArchive.h">
       <Filter>Header Files\CS</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchReferenceNumbers.h">
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="PathUtil.h">
       <Filter>Header Files\Util</Filter>
