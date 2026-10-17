@@ -10,6 +10,8 @@ local Parent = require("mcm.components.infos.Info")
 
 --- @class mwseMCMMouseOverInfo
 local MouseOverInfo = Parent:new()
+MouseOverInfo.__index = MouseOverInfo
+
 MouseOverInfo.triggerOn = "MCM:MouseOver"
 MouseOverInfo.triggerOff = "MCM:MouseLeave"
 
