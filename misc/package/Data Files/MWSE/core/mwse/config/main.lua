@@ -191,6 +191,30 @@ local config = {
 				},
 				{
 					class = "OnOffButton",
+					label = i18n("replaceLightFlicker.label"),
+					description = i18n("replaceLightFlicker.description"),
+					variable = {
+						id = "ReplaceLightFlicker",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "Dropdown",
+					label = i18n("lightFlickerReferenceFPS.label"),
+					description = i18n("lightFlickerReferenceFPS.description"),
+					options = {
+						{ label = i18n("lightFlickerReferenceFPS.option15"), value = 15 },
+						{ label = i18n("lightFlickerReferenceFPS.option30"), value = 30 },
+					},
+					variable = {
+						id = "LightFlickerReferenceFPS",
+						class = "TableVariable",
+						table = mwseConfig,
+					},
+				},
+				{
+					class = "OnOffButton",
 					label = i18n("createFullMinidumps.label"),
 					description = i18n("createFullMinidumps.description"),
 					variable = {
