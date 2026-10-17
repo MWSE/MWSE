@@ -5,15 +5,7 @@ mcm.version = 1.5
 
 --- @param template mwseMCMTemplate
 function mcm.register(template)
-	local modConfig = {}
-
-	--- @param container tes3uiElement
-	modConfig.onCreate = function(container)
-		template:create(container)
-		modConfig.onClose = template.onClose
-	end
-	mwse.log("%s mod config registered", template.name)
-	mwse.registerModConfig(template.name, modConfig)
+	template:register()
 end
 
 --- @param keybind mwseKeyCombo
@@ -95,26 +87,21 @@ end
 function mcm.registerModData(mcmData)
 	-- object returned to be used in modConfigMenu
 	local modConfig = {}
-
-	---CREATE MCM---
-	--- @param container tes3uiElement
-	function modConfig.onCreate(container)
-		local templateClass = mcmData.template or "Template"
-		local templatePath = ("mcm.components.templates." .. templateClass)
-		local template = require(templatePath):new(mcmData) --[[@as mwseMCMTemplate]]
-		template:create(container)
-		modConfig.onClose = template.onClose
-	end
-
-	mwse.log("%s mod config registered", mcmData.name)
+	local Template = require("mcm.components.templates.Template")
+	local template = Template:new(mcmData)
+	template:register()
 
 	return modConfig
 end
 
 -- Depreciated
 function mcm.registerMCM(mcmData)
-	local newMCM = mcm.registerModData(mcmData)
-	mwse.registerModConfig(mcmData.name, newMCM)
+	---@cast mcmData +mwseMCMTemplate
+	if mcmData and mcmData.componentType == "Template" then
+		mcmData:register()
+	else
+		mcm.registerModData(mcmData)
+	end
 end
 
 --[[
