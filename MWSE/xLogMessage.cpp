@@ -5,7 +5,7 @@
 #include "StringUtil.h"
 
 namespace mwse {
-	// Provides an interface to mwse::log, allowing scripts to write to the default MWSE.log file.
+	// Provides an interface to log, allowing scripts to write to the default MWSE.log file.
 	//
 	// MWScript Usage:
 	//	<none> xLogMessage sFormat ...
@@ -20,23 +20,23 @@ namespace mwse {
 	class xLogMessage : InstructionInterface_t {
 	public:
 		xLogMessage();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xLogMessage xLogMessageInstance;
 
-	xLogMessage::xLogMessage() : mwse::InstructionInterface_t(OpCode::xLogMessage) {}
+	xLogMessage::xLogMessage() : InstructionInterface_t(OpCode::xLogMessage) {}
 
-	float xLogMessage::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xLogMessage::execute(VMExecuteInterface& virtualMachine) {
 		mwseString& format = virtualMachine.getString(Stack::getInstance().popLong());
 
 		bool suppressNull = false;
 		std::string badCodes;
 		std::string result = se::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
 
-		mwse::log::getLog() << result << std::endl;
+		log::getLog() << result << std::endl;
 		if (!badCodes.empty()) {
-			mwse::log::getLog() << "xLogMessage: bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << result << "\"" << badCodes << std::endl;
+			log::getLog() << "xLogMessage: bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << result << "\"" << badCodes << std::endl;
 		}
 
 		return 0.0f;

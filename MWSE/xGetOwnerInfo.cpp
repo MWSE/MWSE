@@ -12,14 +12,14 @@ namespace mwse {
 	class xGetOwnerInfo : InstructionInterface_t {
 	public:
 		xGetOwnerInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetOwnerInfo xGetOwnerInfoInstance;
 
-	xGetOwnerInfo::xGetOwnerInfo() : mwse::InstructionInterface_t(OpCode::xGetOwnerInfo) {}
+	xGetOwnerInfo::xGetOwnerInfo() : InstructionInterface_t(OpCode::xGetOwnerInfo) {}
 
-	float xGetOwnerInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetOwnerInfo::execute(VMExecuteInterface& virtualMachine) {
 		const char* id = nullptr;
 		long rank = 0;
 		long type = 0;
@@ -46,26 +46,27 @@ namespace mwse {
 					}
 					else {
 						if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-							mwse::log::getLog() << "xGetOwnerInfo: Owner was of unhandled type " << type << "." << std::endl;
+							log::getLog() << "xGetOwnerInfo: Owner was of unhandled type " << type << "." << std::endl;
 						}
 					}
 				}
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetOwnerInfo: Could not obtain attached VARNODE." << std::endl;
+					log::getLog() << "xGetOwnerInfo: Could not obtain attached VARNODE." << std::endl;
 				}
 			}
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetOwnerInfo: No reference provided." << std::endl;
+				log::getLog() << "xGetOwnerInfo: No reference provided." << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(rank);
-		mwse::Stack::getInstance().pushString(id);
-		mwse::Stack::getInstance().pushLong(type);
+		auto& stack = Stack::getInstance();
+		stack.pushLong(rank);
+		stack.pushString(id);
+		stack.pushLong(type);
 
 		return 0.0f;
 	}

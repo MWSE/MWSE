@@ -11,21 +11,22 @@ namespace mwse {
 	class xGetBaseGold : InstructionInterface_t {
 	public:
 		xGetBaseGold();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetBaseGold xGetBaseGoldInstance;
 
-	xGetBaseGold::xGetBaseGold() : mwse::InstructionInterface_t(OpCode::xGetBaseGold) {}
+	xGetBaseGold::xGetBaseGold() : InstructionInterface_t(OpCode::xGetBaseGold) {}
 
-	float xGetBaseGold::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseGold::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseGold: Called on invalid reference." << std::endl;
+				log::getLog() << "xGetBaseGold: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
@@ -40,7 +41,7 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetBaseGold: Could not get base NPC record for \"" << npc->objectID << "\"" << std::endl;
+					log::getLog() << "xGetBaseGold: Could not get base NPC record for \"" << npc->objectID << "\"" << std::endl;
 				}
 			}
 		}
@@ -51,13 +52,13 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetBaseGold: Could not get base creature record for \"" << creature->objectID << "\"" << std::endl;
+					log::getLog() << "xGetBaseGold: Could not get base creature record for \"" << creature->objectID << "\"" << std::endl;
 				}
 			}
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushShort(gold);
+		stack.pushShort(gold);
 
 		return 0.0f;
 	}

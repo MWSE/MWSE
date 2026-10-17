@@ -12,7 +12,7 @@ namespace mwse {
 	class xContentListFiltered : InstructionInterface_t {
 	public:
 		xContentListFiltered();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		long getBitMaskForRecordType(TES3::ObjectType::ObjectType recordType);
@@ -47,25 +47,26 @@ namespace mwse {
 
 	static xContentListFiltered xContentListFilteredInstance;
 
-	xContentListFiltered::xContentListFiltered() : mwse::InstructionInterface_t(OpCode::xContentListFiltered) {}
+	xContentListFiltered::xContentListFiltered() : InstructionInterface_t(OpCode::xContentListFiltered) {}
 
-	float xContentListFiltered::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xContentListFiltered::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		NI::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(mwse::Stack::getInstance().popLong());
-		long filter = mwse::Stack::getInstance().popLong();
+		NI::IteratedList<TES3::ItemStack*>::Node* node = reinterpret_cast<NI::IteratedList<TES3::ItemStack*>::Node*>(stack.popLong());
+		long filter = stack.popLong();
 
 		// If we're not filtering, abandon ship.
 		if (filter == 0) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xContentListFiltered: No filter provided." << std::endl;
+				log::getLog() << "xContentListFiltered: No filter provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushFloat(0.0f);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushFloat(0.0f);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -73,23 +74,23 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xContentListFiltered: Called on invalid reference." << std::endl;
+				log::getLog() << "xContentListFiltered: Called on invalid reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushFloat(0.0f);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushFloat(0.0f);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		if (!reference->baseObject->isActor()) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xContentListFiltered: Reference is not for an actor." << std::endl;
+				log::getLog() << "xContentListFiltered: Reference is not for an actor." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -131,13 +132,13 @@ namespace mwse {
 		}
 
 		// Push values to the stack.
-		mwse::Stack::getInstance().pushLong((long)next);
-		mwse::Stack::getInstance().pushString(name);
-		mwse::Stack::getInstance().pushFloat(weight);
-		mwse::Stack::getInstance().pushLong(value);
-		mwse::Stack::getInstance().pushLong(type);
-		mwse::Stack::getInstance().pushLong(count);
-		mwse::Stack::getInstance().pushString(id);
+		stack.pushLong((long)next);
+		stack.pushString(name);
+		stack.pushFloat(weight);
+		stack.pushLong(value);
+		stack.pushLong(type);
+		stack.pushLong(count);
+		stack.pushString(id);
 
 		return 0.0f;
 	}

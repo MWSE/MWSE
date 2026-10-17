@@ -9,31 +9,32 @@ namespace mwse {
 	class xGetBaseID : InstructionInterface_t {
 	public:
 		xGetBaseID();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetBaseID xGetBaseIDInstance;
 
-	xGetBaseID::xGetBaseID() : mwse::InstructionInterface_t(OpCode::xGetBaseID) {}
+	xGetBaseID::xGetBaseID() : InstructionInterface_t(OpCode::xGetBaseID) {}
 
-	float xGetBaseID::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseID::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseID: Called without reference." << std::endl;
+				log::getLog() << "xGetBaseID: Called without reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Push the found objectId.
 		const char* objectId = reference->getBaseObject()->getObjectID();
 		if (objectId) {
-			mwse::Stack::getInstance().pushString(objectId);
+			stack.pushString(objectId);
 		}
 		else {
-			mwse::Stack::getInstance().pushString("unknown");
+			stack.pushString("unknown");
 		}
 
 		return 0.0f;
