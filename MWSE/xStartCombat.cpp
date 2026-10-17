@@ -19,7 +19,7 @@ namespace mwse {
 
 	float xStartCombat::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		TES3::Reference* target = Stack::getInstance().popPointer<TES3::Reference*>();
+		auto target = Stack::getInstance().popPointer<TES3::Reference*>();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();

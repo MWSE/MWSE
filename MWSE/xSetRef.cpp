@@ -14,7 +14,7 @@ namespace mwse {
 	xSetRef::xSetRef() : InstructionInterface_t(OpCode::xSetRef) {}
 
 	float xSetRef::execute(VMExecuteInterface& virtualMachine) {
-		TES3::Reference* reference = Stack::getInstance().popPointer<TES3::Reference*>();
+		auto reference = Stack::getInstance().popPointer<TES3::Reference*>();
 		virtualMachine.setReference(reference);
 		return 0.0f;
 	}

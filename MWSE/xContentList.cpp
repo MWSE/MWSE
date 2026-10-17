@@ -22,7 +22,7 @@ namespace mwse {
 	float xContentList::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
-		NI::IteratedList<TES3::ItemStack*>::Node* node = stack.popPointer<NI::IteratedList<TES3::ItemStack*>::Node*>();
+		auto node = stack.popPointer<NI::IteratedList<TES3::ItemStack*>::Node*>();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();

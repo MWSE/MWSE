@@ -52,7 +52,7 @@ namespace mwse {
 	float xContentListFiltered::execute(VMExecuteInterface& virtualMachine) {
 		auto& stack = Stack::getInstance();
 		// Get parameters.
-		NI::IteratedList<TES3::ItemStack*>::Node* node = stack.popPointer<NI::IteratedList<TES3::ItemStack*>::Node*>();
+		auto node = stack.popPointer<NI::IteratedList<TES3::ItemStack*>::Node*>();
 		long filter = stack.popLong();
 
 		// If we're not filtering, abandon ship.
