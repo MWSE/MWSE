@@ -73,6 +73,7 @@ namespace TES3 {
 		void setHeadNode(NI::Node* head);
 		void headTracking(Reference* actorRefr, Reference* targetRefr);
 		void updateMovementDelta(float timing, NI::Point3* inout_startingPosition, bool dontUpdatePositionDelta);
+		void calcRootMovement(int animationGroup);
 
 		//
 		// Custom functions.

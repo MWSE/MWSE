@@ -12,6 +12,8 @@
 #include "TES3Class.h"
 #include "TES3Creature.h"
 #include "TES3CutscenePlayer.h"
+#include "TES3AnimationData.h"
+#include "TES3AnimationGroup.h"
 #include "TES3DataHandler.h"
 #include "TES3Dialogue.h"
 #include "TES3DialogueInfo.h"
@@ -2283,6 +2285,69 @@ namespace mwse::patch {
 	}
 
 	//
+	//
+	// Patch: Cache root movement speeds per animation group.
+	//
+	// Entries are evicted before their animation group is destroyed and validated by group id and
+	// action timing table identity. Only actors meeting calcRootMovement's own preconditions use the
+	// cache, and calls that did not write the speed are never stored.
+	//
+
+	namespace PatchCacheRootMovementSpeed {
+		struct Entry {
+			unsigned char groupId;
+			unsigned int actionCount;
+			const float* actionTimings;
+			short speed;
+		};
+		static std::unordered_map<const TES3::AnimationGroup*, Entry> sCache;
+		static std::mutex sCacheMutex;
+		static constexpr short kUnwrittenSpeed = -32768;
+
+		static bool canUseCache(const TES3::AnimationData* animationData, unsigned char animationGroup) {
+			if (animationData->movementRootNode == nullptr || animationData->manager == nullptr) {
+				return false;
+			}
+			const auto layerIndex = animationData->animGroupLayerIndices[animationGroup];
+			if (layerIndex >= std::size(animationData->keyframeLayers)) {
+				return false;
+			}
+			return animationData->keyframeLayers[layerIndex].lower != nullptr;
+		}
+
+		static void __fastcall OnCalcRootMovement(TES3::AnimationData* animationData, DWORD _EDX_, unsigned char animationGroup) {
+			const auto group = animationData->animationGroups[animationGroup];
+			if (group == nullptr || !canUseCache(animationData, animationGroup)) {
+				animationData->calcRootMovement(animationGroup);
+				return;
+			}
+
+			{
+				std::lock_guard lock(sCacheMutex);
+				const auto cached = sCache.find(group);
+				if (cached != sCache.end()
+					&& cached->second.groupId == group->groupId
+					&& cached->second.actionCount == group->actionCount
+					&& cached->second.actionTimings == group->actionTimings) {
+					animationData->approxRootTravelDistances[animationGroup] = cached->second.speed;
+					return;
+				}
+			}
+
+			const auto previousSpeed = animationData->approxRootTravelDistances[animationGroup];
+			animationData->approxRootTravelDistances[animationGroup] = kUnwrittenSpeed;
+			animationData->calcRootMovement(animationGroup);
+			const auto speed = animationData->approxRootTravelDistances[animationGroup];
+			if (speed == kUnwrittenSpeed) {
+				animationData->approxRootTravelDistances[animationGroup] = previousSpeed;
+				return;
+			}
+
+			std::lock_guard lock(sCacheMutex);
+			sCache[group] = { group->groupId, group->actionCount, group->actionTimings, speed };
+		}
+	}
+
 	// Patch: Optimize relighting of actors during cell transition.
 	// 
 	// Actor teardown: skip markActorCorpse's redundant AIPlanner::enterLeaveSimulation when the actor has
@@ -3131,6 +3196,11 @@ namespace mwse::patch {
 		genCallEnforced(0x420090, 0x6EB380, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdateEffects));
 		genCallEnforced(0x42009E, 0x6EB000, reinterpret_cast<DWORD>(&PatchOptimizeMapUpdates_WrapUpdate));
 
+		// Patch: Cache root movement speeds per animation group.
+		genCallEnforced(0x47092B, 0x46FD80, reinterpret_cast<DWORD>(&PatchCacheRootMovementSpeed::OnCalcRootMovement)); // ActorAnimationData::mergeAnimGroups -> calcRootMovement
+		auto animationGroup_dtor = &TES3::AnimationGroup::dtor;
+		genCallEnforced(0x492863, 0x492880, *reinterpret_cast<DWORD*>(&animationGroup_dtor)); // AnimationGroup::deleting_dtor -> dtor
+
 		// Patch: Optimize relighting of actors during cell transition.
 		auto DataHandler_relightExteriorCellsAfterCross = &TES3::DataHandler::relightExteriorCellsAfterCross;
 		genCallEnforced(0x486FBE, 0x485C50, *reinterpret_cast<DWORD*>(&DataHandler_relightExteriorCellsAfterCross)); // updateCellThreadLoader -> updateAllLights
@@ -3414,5 +3484,16 @@ namespace mwse::patch {
 			CrashLogger::s_originalFilter = SetUnhandledExceptionFilter(MWSEUnhandledExceptionFilter);
 		}
 		return true;
+	}
+}
+
+namespace TES3 {
+	const auto TES3_AnimationGroup_dtor = reinterpret_cast<void(__thiscall*)(AnimationGroup*)>(0x492880);
+	void AnimationGroup::dtor() {
+		{
+			std::lock_guard lock(mwse::patch::PatchCacheRootMovementSpeed::sCacheMutex);
+			mwse::patch::PatchCacheRootMovementSpeed::sCache.erase(this);
+		}
+		TES3_AnimationGroup_dtor(this);
 	}
 }
