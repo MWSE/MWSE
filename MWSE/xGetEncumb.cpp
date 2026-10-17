@@ -11,29 +11,30 @@ namespace mwse {
 	class xGetEncumb : InstructionInterface_t {
 	public:
 		xGetEncumb();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetEncumb xGetEncumbInstance;
 
-	xGetEncumb::xGetEncumb() : mwse::InstructionInterface_t(OpCode::xGetEncumb) {}
+	xGetEncumb::xGetEncumb() : InstructionInterface_t(OpCode::xGetEncumb) {}
 
-	float xGetEncumb::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetEncumb::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference to target.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumb: No reference provided." << std::endl;
+				log::getLog() << "xGetEncumb: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
 		if (!reference->baseObject->isActor()) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumb: Reference is not for an actor." << std::endl;
+				log::getLog() << "xGetEncumb: Reference is not for an actor." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -59,7 +60,7 @@ namespace mwse {
 			totalWeight *= -1;
 		}
 
-		mwse::Stack::getInstance().pushFloat(totalWeight);
+		stack.pushFloat(totalWeight);
 
 		return 0.0f;
 	}

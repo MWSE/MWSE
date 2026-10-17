@@ -7,29 +7,30 @@ namespace mwse {
 	class xFileReadFloat : InstructionInterface_t {
 	public:
 		xFileReadFloat();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileReadFloat xFileReadFloatInstance;
 
-	xFileReadFloat::xFileReadFloat() : mwse::InstructionInterface_t(OpCode::xFileReadFloat) {}
+	xFileReadFloat::xFileReadFloat() : InstructionInterface_t(OpCode::xFileReadFloat) {}
 
-	float xFileReadFloat::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
-			mwse::log::getLog() << "xFileReadFloat: Function called with too few arguments." << std::endl;
+	float xFileReadFloat::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
+			log::getLog() << "xFileReadFloat: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
 		// Get arguments from the stack.
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long count = mwse::Stack::getInstance().popLong();
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		long count = stack.popLong();
 
 		// Gather values into a temporary list, so they aren't in reverse order.
 		long valuesRead = 0;
 		std::list<float> values;
 		for (long i = 0; i < count; ++i) {
 			try {
-				float value = mwse::FileSystem::getInstance().readFloat(fileName);
+				float value = FileSystem::getInstance().readFloat(fileName);
 				values.push_front(value);
 				valuesRead++;
 			}
@@ -40,10 +41,10 @@ namespace mwse {
 
 		// Copy values from the temporary vector to the stack.
 		while (!values.empty()) {
-			mwse::Stack::getInstance().pushFloat(values.front());
+			stack.pushFloat(values.front());
 			values.pop_front();
 		}
-		mwse::Stack::getInstance().pushLong(valuesRead);
+		stack.pushLong(valuesRead);
 
 		return 0.0f;
 	}

@@ -11,25 +11,26 @@ namespace mwse {
 	class xGetCharge : InstructionInterface_t {
 	public:
 		xGetCharge();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetCharge xGetChargeInstance;
 
-	xGetCharge::xGetCharge() : mwse::InstructionInterface_t(OpCode::xGetCharge) {}
+	xGetCharge::xGetCharge() : InstructionInterface_t(OpCode::xGetCharge) {}
 
-	float xGetCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetCharge::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		float charge = INVALID_VALUE;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCharge: No reference provided." << std::endl;
+				log::getLog() << "xGetCharge: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -37,9 +38,9 @@ namespace mwse {
 		TES3::Object* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetCharge: No record found for reference." << std::endl;
+				log::getLog() << "xGetCharge: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -56,12 +57,12 @@ namespace mwse {
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xGetCharge: Invalid call on record of type " << object->objectType << "." << std::endl;
+					log::getLog() << "xGetCharge: Invalid call on record of type " << object->objectType << "." << std::endl;
 				}
 			}
 		}
 
-		mwse::Stack::getInstance().pushFloat(charge);
+		stack.pushFloat(charge);
 
 		return 0.0f;
 	}

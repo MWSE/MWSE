@@ -11,21 +11,22 @@ namespace mwse {
 	class xMessageFix : InstructionInterface_t {
 	public:
 		xMessageFix();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xMessageFix xMessageFixInstance;
 
-	xMessageFix::xMessageFix() : mwse::InstructionInterface_t(OpCode::xMessageFix) {}
+	xMessageFix::xMessageFix() : InstructionInterface_t(OpCode::xMessageFix) {}
 
 	// This function changes the script at runtime.
-	float xMessageFix::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xMessageFix::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		unsigned short mboxhdr[2] = {};
 
 		// We want to modify the real script SCDT info. We'll keep track of where we're reading/writing with a read/write pointer,
 		// starting at the current instruction pointer in the machine code.
 		auto scriptRWP = reinterpret_cast<unsigned char*>(virtualMachine.getScript()->machineCode);
-		scriptRWP += +mwse::mwscript::getInstructionPointer();
+		scriptRWP += +mwscript::getInstructionPointer();
 
 		// Must be followed by MessageBox opcode and length.
 		mboxhdr[0] = reinterpret_cast<unsigned short*>(scriptRWP)[0];
@@ -34,12 +35,12 @@ namespace mwse {
 
 		// This function is invalid if the next call isn't to MessageBox.
 		if (mboxhdr[0] != OpCode::MessageBox) {
-			mwse::log::getLog() << "xMessageFix: This function must immediately be followed by a MessageBox call." << std::endl;
+			log::getLog() << "xMessageFix: This function must immediately be followed by a MessageBox call." << std::endl;
 			return 0.0f;
 		}
 
 		// Get the parameter matching the main message string.
-		mwseString& format = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		// The first string is the message text. Following parameters might be based on the format there.
 		// We can skip the substitution if the string is empty or nonexistant.
@@ -48,7 +49,7 @@ namespace mwse {
 			std::string badCodes;
 			auto newString = se::string::interpolate(format, virtualMachine, &suppressNull, &badCodes);
 			if (badCodes != "") {
-				mwse::log::getLog() << "xMessageFix: Bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << newString << "\"." << std::endl;
+				log::getLog() << "xMessageFix: Bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << newString << "\"." << std::endl;
 			}
 
 			// Make sure that we can fit the new string into the buffer. Copy what we can into the string here.
@@ -69,7 +70,7 @@ namespace mwse {
 		// Find the null after the orignal message string.
 		// The "%.0f" style formatting is not allowed for the MessageBox, xMessageFix handles it here.
 		if (*scriptRWP != 0) {
-			mwse::log::getLog() << "xMessageFix: The \"%.0f\" style formatting is not allowed for the MessageBox. Aborting." << std::endl;
+			log::getLog() << "xMessageFix: The \"%.0f\" style formatting is not allowed for the MessageBox. Aborting." << std::endl;
 			return false;
 		}
 		scriptRWP += 1;
@@ -85,7 +86,7 @@ namespace mwse {
 			scriptRWP += 1;
 
 			// Get the replacement string.
-			mwseString& newButtonText = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+			mwseString& newButtonText = virtualMachine.getString(stack.popLong());
 
 			// We can skip the substitution if the string is empty or nonexistant.
 			if (!newButtonText.empty()) {
@@ -93,7 +94,7 @@ namespace mwse {
 				std::string badCodes;
 				std::string newString = se::string::interpolate(newButtonText, virtualMachine, &suppressNull, &badCodes);
 				if (badCodes != "") {
-					mwse::log::getLog() << "xMessageFix: Bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << newString << "\"." << std::endl;
+					log::getLog() << "xMessageFix: Bad format \"" << badCodes << "\" in \"" << format << "\" generating \"" << newString << "\"." << std::endl;
 				}
 
 				// Make sure that we can fit the new string into the buffer. Copy what we can into the string here.
