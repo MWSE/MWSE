@@ -196,23 +196,15 @@ namespace se::string {
 		}
 
 		bool exists(const char* value) {
-			for (StringMap_t::iterator it = store.begin(); it != store.end(); ++it) {
-				if (it->second.compare(value) == 0) {
-					return true;
-				}
-			}
-
-			return false;
+			return std::ranges::any_of(store, [&](const auto& entry) {
+				return entry.second.compare(value) == 0;
+			});
 		}
 
 		bool exists(std::string_view value) {
-			for (StringMap_t::iterator it = store.begin(); it != store.end(); ++it) {
-				if (it->second.compare(value) == 0) {
-					return true;
-				}
-			}
-
-			return false;
+			return std::ranges::any_of(store, [&](const auto& entry) {
+				return entry.second.compare(value) == 0;
+			});
 		}
 
 		mwseString& get(const long id) {

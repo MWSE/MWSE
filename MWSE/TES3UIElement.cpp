@@ -283,18 +283,18 @@ namespace TES3::UI {
 
 		// Copy <count> elements into a temp buffer
 		Element** from = begin + moveFrom, ** to = begin + insertBefore;
-		std::vector<const Element*> temp(from, from + count);
+		std::vector<Element*> temp(from, from + count);
 
 		// Slide <shift> children in-place, then write buffer into correct location
 		if (moveFrom < insertBefore) {
 			int shift = insertBefore - moveFrom;
-			memmove_s(from, sizeof(Element**) * shift, from + count, sizeof(Element**) * shift);
-			memmove_s(to - count, sizeof(Element**) * count, temp.data(), sizeof(Element**) * count);
+			std::copy(from + count, from + count + shift, from);
+			std::copy(temp.begin(), temp.end(), to - count);
 		}
 		else {
 			int shift = moveFrom - insertBefore;
-			memmove_s(to + count, sizeof(Element**) * shift, to, sizeof(Element**) * shift);
-			memmove_s(to, sizeof(Element**) * count, temp.data(), sizeof(Element**) * count);
+			std::copy_backward(to, to + shift, to + count + shift);
+			std::copy(temp.begin(), temp.end(), to);
 		}
 
 		return true;
