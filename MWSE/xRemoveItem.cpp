@@ -10,24 +10,22 @@ namespace mwse {
 	class xRemoveItem : InstructionInterface_t {
 	public:
 		xRemoveItem();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRemoveItem xRemoveItemInstance;
 
-	xRemoveItem::xRemoveItem() : mwse::InstructionInterface_t(OpCode::xRemoveItem) {}
+	xRemoveItem::xRemoveItem() : InstructionInterface_t(OpCode::xRemoveItem) {}
 
-	float xRemoveItem::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xRemoveItem::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long count = mwse::Stack::getInstance().popLong();
+		mwseString& id = virtualMachine.getString(stack.popLong());
+		long count = stack.popLong();
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xRemoveItem: Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 
@@ -35,14 +33,14 @@ namespace mwse {
 		TES3::BaseObject* itemTemplate = virtualMachine.getTemplate(id.c_str());
 		if (itemTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xRemoveItem: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xRemoveItem: No template found with id '" << id << "'." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::RemoveItem(script, reference, itemTemplate, count);
+		mwscript::RemoveItem(script, reference, itemTemplate, count);
 
 		return 0.0f;
 	}

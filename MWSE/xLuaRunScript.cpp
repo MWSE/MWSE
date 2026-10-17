@@ -10,7 +10,7 @@ namespace mwse {
 	class xLuaRunScript : InstructionInterface_t {
 	public:
 		xLuaRunScript();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		std::unordered_map<int, sol::table> cachedScripts;
@@ -18,15 +18,16 @@ namespace mwse {
 
 	static xLuaRunScript xLuaRunScriptInstance;
 
-	xLuaRunScript::xLuaRunScript() : mwse::InstructionInterface_t(OpCode::xLuaRunScript) {}
+	xLuaRunScript::xLuaRunScript() : InstructionInterface_t(OpCode::xLuaRunScript) {}
 
-	float xLuaRunScript::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xLuaRunScript::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		lua::LuaManager& manager = lua::LuaManager::getInstance();
 		const auto stateHandle = manager.getThreadSafeStateHandle();
 		auto& state = stateHandle.getState();
 
 		// Get parameters.
-		auto scriptNameKey = mwse::Stack::getInstance().popLong();
+		auto scriptNameKey = stack.popLong();
 		mwseString& scriptName = virtualMachine.getString(scriptNameKey);
 
 		// Update the LuaManager to reference our current context.
@@ -61,7 +62,7 @@ namespace mwse {
 				manager.setCurrentScript(nullptr);
 
 				// Clear the stack, since we can't trust what the script did or did not do.
-				mwse::Stack::getInstance().clear();
+				stack.clear();
 				return 0.0f;
 			}
 		}
@@ -76,14 +77,14 @@ namespace mwse {
 					log::getLog() << "Lua error encountered for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->header.name << "':" << std::endl << error.what() << std::endl;
 
 					// Clear the stack, since we can't trust what the script did or did not do.
-					mwse::Stack::getInstance().clear();
+					stack.clear();
 				}
 			}
 			else {
 				log::getLog() << "No execute function found for xLuaRunScript call of '" << scriptName << "' from script '" << virtualMachine.getScript()->header.name << "'." << std::endl;
 
 				// Clear the stack, since we can't trust what the script did or did not do.
-				mwse::Stack::getInstance().clear();
+				stack.clear();
 			}
 		}
 
