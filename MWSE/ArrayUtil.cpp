@@ -5,9 +5,7 @@
 namespace mwse {
 	Arrays Arrays::singleton;
 
-	Arrays::Arrays() {
-		arrays = Arrays_t();
-	}
+	Arrays::Arrays() = default;
 
 	size_t Arrays::create(std::string_view caller) {
 		size_t id = 0;
@@ -25,7 +23,7 @@ namespace mwse {
 		ArrayItem_t value = 0;
 		if (id > 0 && id <= arrays.size()) {
 			ContainedArray_t const& a = arrays[id - 1];
-			if (index >= 0 && index < a.size()) {
+			if (index < a.size()) {
 				value = a[index];
 			}
 			else {
@@ -42,17 +40,12 @@ namespace mwse {
 		short success = 0;
 
 		if (id > 0 && id <= arrays.size()) {
-			if (index >= 0) {
-				ContainedArray_t& a = arrays[id - 1];
-				if (index + 1 > a.size()) {
-					a.resize(index + 1);
-				}
-				a[index] = value;
-				success = 1;
+			ContainedArray_t& a = arrays[id - 1];
+			if (index + 1 > a.size()) {
+				a.resize(index + 1);
 			}
-			else {
-				mwse::log::getLog() << caller << ": Array index out of bounds. id: " << id << " index: " << index << std::endl;
-			}
+			a[index] = value;
+			success = 1;
 		}
 		else {
 			mwse::log::getLog() << caller << ": Invalid array id: " << id << std::endl;

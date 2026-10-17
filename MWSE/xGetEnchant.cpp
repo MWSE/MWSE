@@ -15,14 +15,14 @@ namespace mwse {
 	class xGetEnchant : InstructionInterface_t {
 	public:
 		xGetEnchant();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetEnchant xGetEnchantInstance;
 
-	xGetEnchant::xGetEnchant() : mwse::InstructionInterface_t(OpCode::xGetEnchant) {}
+	xGetEnchant::xGetEnchant() : InstructionInterface_t(OpCode::xGetEnchant) {}
 
-	float xGetEnchant::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetEnchant::execute(VMExecuteInterface& virtualMachine) {
 		// Return values.
 		char* enchId = nullptr;
 		long type = 0;
@@ -67,13 +67,14 @@ namespace mwse {
 		}
 
 		// Push results to the stack.
-		Stack::getInstance().pushLong(autocalc);
-		Stack::getInstance().pushLong(effects);
-		Stack::getInstance().pushLong(maxCharge);
-		Stack::getInstance().pushFloat(currCharge);
-		Stack::getInstance().pushLong(cost);
-		Stack::getInstance().pushLong(type);
-		Stack::getInstance().pushString(enchId);
+		auto& stack = Stack::getInstance();
+		stack.pushLong(autocalc);
+		stack.pushLong(effects);
+		stack.pushLong(maxCharge);
+		stack.pushFloat(currCharge);
+		stack.pushLong(cost);
+		stack.pushLong(type);
+		stack.pushString(enchId);
 
 		return 0.0f;
 	}

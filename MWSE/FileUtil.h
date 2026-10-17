@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef NELEM
-#define NELEM(a) (sizeof(a)/sizeof(a[0]))
-#endif
-
 namespace mwse {
 
 	struct mwseFileState_t {
@@ -19,14 +15,24 @@ namespace mwse {
 
 		HANDLE getFile(std::string_view fileName);
 
-		short readShort(std::string_view fileName);
-		long readLong(std::string_view fileName);
-		float readFloat(std::string_view fileName);
+		template <typename T>
+		requires std::is_trivially_copyable_v<T>
+		T readValue(std::string_view fileName) {
+			T result{};
+			if (read(fileName, &result, sizeof(T)) != sizeof(T)) {
+				throw std::exception("Invalid size read.");
+			}
+			return result;
+		}
+
 		std::string readString(std::string_view fileName, bool stopAtEndOfLine);
 
-		void writeShort(std::string_view fileName, const short value);
-		void writeLong(std::string_view fileName, const long value);
-		void writeFloat(std::string_view fileName, const float value);
+		template <typename T>
+		requires std::is_trivially_copyable_v<T>
+		void writeValue(std::string_view fileName, T value) {
+			write(fileName, &value, sizeof(T));
+		}
+
 		void writeString(std::string_view fileName, std::string_view value, bool suppressNull = false);
 
 		bool seek(std::string_view fileName, long absolute);

@@ -7,22 +7,23 @@ namespace mwse {
 	class xFileRewind : InstructionInterface_t {
 	public:
 		xFileRewind();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileRewind xFileRewindInstance;
 
-	xFileRewind::xFileRewind() : mwse::InstructionInterface_t(OpCode::xFileRewind) {}
+	xFileRewind::xFileRewind() : InstructionInterface_t(OpCode::xFileRewind) {}
 
-	float xFileRewind::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 1) {
-			mwse::log::getLog() << "xFileRewind: Function called with too few arguments." << std::endl;
+	float xFileRewind::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 1) {
+			log::getLog() << "xFileRewind: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
 
-		mwse::FileSystem::getInstance().seek(fileName, 0);
+		FileSystem::getInstance().seek(fileName, 0);
 
 		return 0.0f;
 	}

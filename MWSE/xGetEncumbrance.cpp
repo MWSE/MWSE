@@ -12,7 +12,7 @@ namespace mwse {
 	class xGetEncumbrance : InstructionInterface_t {
 	public:
 		xGetEncumbrance();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 		enum EncumbranceQueryType {
 			CurrentEncumbrance = 0,
@@ -23,20 +23,18 @@ namespace mwse {
 
 	static xGetEncumbrance xGetEncumbranceInstance;
 
-	xGetEncumbrance::xGetEncumbrance() : mwse::InstructionInterface_t(OpCode::xGetEncumbrance) {}
+	xGetEncumbrance::xGetEncumbrance() : InstructionInterface_t(OpCode::xGetEncumbrance) {}
 
-	float xGetEncumbrance::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetEncumbrance::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		EncumbranceQueryType queryType = static_cast<EncumbranceQueryType>(mwse::Stack::getInstance().popLong());
-		bool roundResult = mwse::Stack::getInstance().popLong();
+		EncumbranceQueryType queryType = static_cast<EncumbranceQueryType>(stack.popLong());
+		bool roundResult = stack.popLong();
 
 		// Get reference to target.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -44,18 +42,18 @@ namespace mwse {
 		TES3::BaseObject* record = reference->baseObject;
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: No record found for reference." << std::endl;
+				log::getLog() << "xGetEncumbrance: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
 		// This function only supports creatures and NPCs.
 		if (record->objectType != TES3::ObjectType::NPC && record->objectType != TES3::ObjectType::Creature) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: Called on unsupported record type " << record->objectType << "." << std::endl;
+				log::getLog() << "xGetEncumbrance: Called on unsupported record type " << record->objectType << "." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -65,9 +63,9 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetEncumbrance: No associated macp record found for reference." << std::endl;
+				log::getLog() << "xGetEncumbrance: No associated macp record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
@@ -84,7 +82,7 @@ namespace mwse {
 			encumbrance = round(encumbrance * 100.0) / 100.0;
 		}
 
-		mwse::Stack::getInstance().pushFloat(static_cast<float>(encumbrance));
+		stack.pushFloat(static_cast<float>(encumbrance));
 
 		return 0.0f;
 	}

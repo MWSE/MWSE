@@ -10,31 +10,29 @@ namespace mwse {
 	class xAITravel : InstructionInterface_t {
 	public:
 		xAITravel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xAITravel xAITravelInstance;
 
-	xAITravel::xAITravel() : mwse::InstructionInterface_t(OpCode::xAITravel) {}
+	xAITravel::xAITravel() : InstructionInterface_t(OpCode::xAITravel) {}
 
-	float xAITravel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xAITravel::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float x = mwse::Stack::getInstance().popFloat();
-		float y = mwse::Stack::getInstance().popFloat();
-		float z = mwse::Stack::getInstance().popFloat();
+		float x = stack.popFloat();
+		float y = stack.popFloat();
+		float z = stack.popFloat();
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xAITravel: Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::AITravel(script, reference, x, y, z);
+		mwscript::AITravel(script, reference, x, y, z);
 
 		return 0.0f;
 	}
