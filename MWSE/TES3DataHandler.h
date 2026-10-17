@@ -198,34 +198,33 @@ namespace TES3 {
 		void clearCellByNameCache(const Cell* cell);
 
 		// Wrapper around resolveObject that enforces type.
-		template <typename T>
+		template <TES3BaseObject T>
 		T* resolveObjectByType(std::string_view id) {
 			const auto potentialResult = resolveObject(id.data());
 			if (potentialResult == nullptr) {
 				return nullptr;
 			}
 
-			if constexpr (std::is_same<T, TES3::BaseObject>::value) {
+			if constexpr (std::same_as<T, TES3::BaseObject>) {
 				return potentialResult;
 			}
-			else if constexpr (std::is_same<T, TES3::Object>::value) {
-				// TODO: This needs some kind of solution to ensure that it is the right derived type. We have no RTTI.
+			else if constexpr (std::same_as<T, TES3::Object>) {
 				return static_cast<Object*>(potentialResult);
 			}
-			else if constexpr (std::is_same<T, TES3::PhysicalObject>::value) {
-				// TODO: This needs some kind of solution to ensure that it is the right derived type. We have no RTTI.
+			else if constexpr (std::same_as<T, TES3::PhysicalObject>) {
 				return static_cast<PhysicalObject*>(potentialResult);
 			}
-			else if constexpr (std::is_same<T, TES3::Actor>::value) {
+			else if constexpr (std::same_as<T, TES3::Actor>) {
 				return potentialResult->isActor() ? static_cast<Actor*>(potentialResult) : nullptr;
 			}
-			else if constexpr (std::is_same<T, TES3::Item>::value) {
+			else if constexpr (std::same_as<T, TES3::Item>) {
 				return potentialResult->isItem() ? static_cast<Item*>(potentialResult) : nullptr;
 			}
-			else {
+			else if constexpr (std::derived_from<decltype(potentialResult), T>) {
 				static_assert(T::OBJECT_TYPE != TES3::ObjectType::Invalid, "Call to get object type that doesn't have a defined static object type.");
 				return potentialResult->objectType == T::OBJECT_TYPE ? static_cast<T*>(potentialResult) : nullptr;
 			}
+			return nullptr;
 		}
 	};
 	static_assert(sizeof(NonDynamicData) == 0xB3AC, "TES3::NonDynamicData failed size validation");

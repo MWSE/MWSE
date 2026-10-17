@@ -4,6 +4,9 @@
 
 #include "TES3Object.h"
 
+template<typename T>
+concept TES3Item = std::derived_from<T, TES3::Item>;
+
 namespace TES3 {
 	// Dummy structure we mostly use for Lua casting.
 	struct Item : PhysicalObject {

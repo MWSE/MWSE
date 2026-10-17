@@ -38,12 +38,14 @@ namespace se {
 		}
 
 		template <typename Visitor>
+		requires std::invocable<Visitor&, Node*>
 		void traverseInOrder(Node* sentinel, Visitor visitor) const {
 			traverseInOrder(treeRoot(), sentinel, visitor);
 		}
 
 	private:
 		template <typename Visitor>
+		requires std::invocable<Visitor&, Node*>
 		static void traverseInOrder(Node* node, Node* sentinel, Visitor& visitor) {
 			if (!node || node == sentinel) {
 				return;

@@ -18,6 +18,15 @@ int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj);
 int sol_lua_push(sol::types<T>, lua_State* L, const T& obj) { return obj.getOrCreateLuaObject(L).push(L); } \
 int sol_lua_push(sol::types<T*>, lua_State* L, const T* obj) { return obj->getOrCreateLuaObject(L).push(L); }
 
+template<typename T>
+concept TES3BaseObject = std::derived_from<T, TES3::BaseObject>;
+
+template<typename T>
+concept TES3Object = std::derived_from<T, TES3::Object>;
+
+template<typename T>
+concept TES3PhysicalObject = std::derived_from<T, TES3::PhysicalObject>;
+
 namespace TES3 {
 	using se::LinkedObjectList;
 

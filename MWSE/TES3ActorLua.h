@@ -5,7 +5,7 @@
 #include "TES3Actor.h"
 
 namespace mwse::lua {
-	template <typename T>
+	template <TES3Actor T>
 	void setUserdataForTES3Actor(sol::usertype<T>& usertypeDefinition) {
 		setUserdataForTES3PhysicalObject(usertypeDefinition);
 
