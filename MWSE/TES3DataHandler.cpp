@@ -26,6 +26,7 @@
 #include "TES3MagicEffectController.h"
 #include "TES3MobilePlayer.h"
 #include "TES3Reference.h"
+#include "TES3Region.h"
 #include "TES3Sound.h"
 #include "TES3Spell.h"
 #include "TES3UIManager.h"
@@ -643,6 +644,7 @@ namespace TES3 {
 	}
 
 	static std::unordered_map<std::string, Cell*> cellByNameCache;
+	static std::recursive_mutex cellByNameCacheMutex;
 
 	static std::string normalizeCellName(std::string_view name) {
 		std::string normalized(name);
@@ -656,6 +658,7 @@ namespace TES3 {
 		}
 
 		const auto normalizedName = normalizeCellName(name);
+		const std::scoped_lock lock(cellByNameCacheMutex);
 		const auto cacheHit = cellByNameCache.find(normalizedName);
 		if (cacheHit != cellByNameCache.end()) {
 			return cacheHit->second;
@@ -675,11 +678,33 @@ namespace TES3 {
 	}
 
 	void NonDynamicData::clearCellNameCache(std::string_view name) {
+		const std::scoped_lock lock(cellByNameCacheMutex);
 		cellByNameCache.erase(normalizeCellName(name));
 	}
 
 	void NonDynamicData::clearCellNameCache(const Cell* cell) {
+		if (cell == nullptr) {
+			return;
+		}
+
+		const std::scoped_lock lock(cellByNameCacheMutex);
 		std::erase_if(cellByNameCache, [=](const auto& p) { return p.second == cell; });
+		clearCellNameCache(cell->getObjectID());
+	}
+
+	void NonDynamicData::clearCellNameCache(const Region* region) {
+		if (region == nullptr) {
+			const auto defaultCellName = DataHandler::get()->getGameSettingString(GMST::sDefaultCellname);
+			clearCellNameCache(defaultCellName);
+			return;
+		}
+
+		const auto name = region->getName();
+		if (name == nullptr) {
+			return;
+		}
+
+		clearCellNameCache(name);
 	}
 
 	const auto TES3_NonDynamicData_getRegionById = reinterpret_cast<Region * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA610);
@@ -753,19 +778,6 @@ namespace TES3 {
 
 	bool NonDynamicData::objectExists(std::string_view id) {
 		return resolveObject(id.data()) != nullptr;
-	}
-
-	void NonDynamicData::clearCellByNameCache(const Cell* cell) {
-		if (cell == nullptr) {
-			return;
-		}
-
-		const auto objectID = cell->getObjectID();
-		if (objectID == nullptr) {
-			return;
-		}
-
-		cellByNameCache.erase(normalizeCellName(objectID));
 	}
 
 	//

@@ -186,6 +186,7 @@ namespace TES3 {
 
 		Land* getLandscape() const;
 		Region* getRegion() const;
+		void setRegion(Region* region);
 
 		NI::PackedColor* getAmbientColor();
 		NI::PackedColor* getFogColor();

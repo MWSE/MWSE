@@ -31,6 +31,7 @@
 #include "TES3MobileProjectile.h"
 #include "TES3MobManager.h"
 #include "TES3Reference.h"
+#include "TES3Region.h"
 #include "TES3Script.h"
 #include "TES3Sound.h"
 #include "TES3UIElement.h"
@@ -1966,8 +1967,9 @@ namespace mwse::patch {
 	}
 
 	static TES3::Region* __fastcall PatchCellLoadGetRegion(TES3::NonDynamicData* self, TES3::Cell* cell, const char* name) {
-		TES3::NonDynamicData::clearCellNameCache(cell);
-		return self->getRegion(name);
+		const auto region = self->getRegion(name);
+		cell->setRegion(region);
+		return region;
 	}
 
 	__declspec(naked) void PatchCellLoadGetRegionSetup() {

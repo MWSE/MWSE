@@ -172,6 +172,7 @@ namespace TES3 {
 		Region* getRegion(const char* id);
 		static void clearCellNameCache(std::string_view name);
 		static void clearCellNameCache(const Cell* cell);
+		static void clearCellNameCache(const Region* region);
 
 		MagicEffect * getMagicEffect(int id);
 
@@ -197,7 +198,6 @@ namespace TES3 {
 		sol::table getMagicEffects_lua(sol::this_state ts);
 
 		bool objectExists(std::string_view id);
-		void clearCellByNameCache(const Cell* cell);
 
 		// Wrapper around resolveObject that enforces type.
 		template <typename T>

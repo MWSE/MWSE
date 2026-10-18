@@ -1,5 +1,6 @@
 #include "TES3Region.h"
 
+#include "TES3DataHandler.h"
 #include "TES3Weather.h"
 #include "TES3WeatherController.h"
 #include "TES3WorldController.h"
@@ -34,7 +35,10 @@ namespace TES3 {
 		if (strlen(value) >= 32) {
 			throw std::invalid_argument("Path cannot be 32 or more characters.");
 		}
+
+		NonDynamicData::clearCellNameCache(this);
 		strncpy_s(name, value, 32);
+		NonDynamicData::clearCellNameCache(this);
 	}
 
 	unsigned char Region::getWeatherChance(int weatherIndex) const {

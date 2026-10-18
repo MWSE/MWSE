@@ -82,7 +82,7 @@ namespace TES3 {
 		mwse::ReferenceTracker::invalidateObject(this);
 
 		if (objectType == ObjectType::Cell && dataHandler && dataHandler->nonDynamicData) {
-			dataHandler->nonDynamicData->clearCellByNameCache(static_cast<const Cell*>(this));
+			dataHandler->nonDynamicData->clearCellNameCache(static_cast<const Cell*>(this));
 		}
 
 		if (UI::MenuInputController::lastTooltipObject == this) {

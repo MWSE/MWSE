@@ -56,7 +56,7 @@ namespace TES3 {
 	void Cell::setGridX(int x) {
 		const auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler && dataHandler->nonDynamicData) {
-			dataHandler->nonDynamicData->clearCellByNameCache(this);
+			dataHandler->nonDynamicData->clearCellNameCache(this);
 		}
 
 		TES3_Cell_setGridX(this, x);
@@ -71,7 +71,7 @@ namespace TES3 {
 	void Cell::setGridY(int y) {
 		const auto dataHandler = TES3::DataHandler::get();
 		if (dataHandler && dataHandler->nonDynamicData) {
-			dataHandler->nonDynamicData->clearCellByNameCache(this);
+			dataHandler->nonDynamicData->clearCellNameCache(this);
 		}
 
 		TES3_Cell_setGridY(this, y);
@@ -79,7 +79,6 @@ namespace TES3 {
 
 	const auto TES3_Cell_setName = reinterpret_cast<void(__thiscall*)(Cell*, const char*)>(0x4E25E0);
 	void Cell::setName(const char* name) {
-		NonDynamicData::clearCellNameCache(getObjectID());
 		NonDynamicData::clearCellNameCache(this);
 
 		TES3_Cell_setName(this, name);
@@ -180,6 +179,20 @@ namespace TES3 {
 		else {
 			return nullptr;
 		}
+	}
+
+	void Cell::setRegion(Region* region) {
+		if (!getIsOrBehavesAsExterior()) {
+			return;
+		}
+
+		if (waterLevelOrRegion.region == region) {
+			return;
+		}
+
+		NonDynamicData::clearCellNameCache(waterLevelOrRegion.region);
+		waterLevelOrRegion.region = region;
+		NonDynamicData::clearCellNameCache(region);
 	}
 
 	NI::PackedColor* Cell::getAmbientColor() {
