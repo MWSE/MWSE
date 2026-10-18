@@ -36,6 +36,12 @@ namespace TES3 {
 		return TES3_Cell_constructor(se::memory::_new<Cell>());
 	}
 
+	const auto TES3_Cell_dtor = reinterpret_cast<void(__thiscall*)(Cell*)>(0x4DB660);
+	void Cell::dtor() {
+		NonDynamicData::clearCellNameCache(this);
+		TES3_Cell_dtor(this);
+	}
+
 	const auto TES3_Cell_getFirstObjectOfType = reinterpret_cast<Reference*(__thiscall *)(const Cell*, int, unsigned char)>(0x4DBEF0);
 	Reference * Cell::getFirstObjectOfType(ObjectType::ObjectType type, bool skipDeleted) const {
 		return TES3_Cell_getFirstObjectOfType(this, type, skipDeleted);
@@ -71,14 +77,15 @@ namespace TES3 {
 		TES3_Cell_setGridY(this, y);
 	}
 
-	const auto TES3_Cell_setName = reinterpret_cast<void(__thiscall *)(Cell*, const char*)>(0x4E25E0);
+	const auto TES3_Cell_setName = reinterpret_cast<void(__thiscall*)(Cell*, const char*)>(0x4E25E0);
 	void Cell::setName(const char* name) {
-		const auto dataHandler = TES3::DataHandler::get();
-		if (dataHandler && dataHandler->nonDynamicData) {
-			dataHandler->nonDynamicData->clearCellByNameCache(this);
-		}
+		NonDynamicData::clearCellNameCache(getObjectID());
+		NonDynamicData::clearCellNameCache(this);
 
 		TES3_Cell_setName(this, name);
+
+		// Evict any other cell cached under the resulting ID, including exterior fallback names.
+		NonDynamicData::clearCellNameCache(getObjectID());
 	}
 
 	const auto TES3_Cell_addMapNote = reinterpret_cast<void(__thiscall*)(Cell*, NI::Point2*, float, const char*)>(0x4E3730);

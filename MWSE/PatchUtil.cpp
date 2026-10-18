@@ -1965,6 +1965,18 @@ namespace mwse::patch {
 		return self->getCellByName(name);
 	}
 
+	static TES3::Region* __fastcall PatchCellLoadGetRegion(TES3::NonDynamicData* self, TES3::Cell* cell, const char* name) {
+		TES3::NonDynamicData::clearCellNameCache(cell);
+		return self->getRegion(name);
+	}
+
+	__declspec(naked) void PatchCellLoadGetRegionSetup() {
+		__asm {
+			mov edx, ebp // Snag the cell while we can before forwarding.
+			jmp PatchCellLoadGetRegion
+		}
+	}
+
 	//
 	// Patch: Implement map-based lookup of references.
 	//
@@ -2391,6 +2403,12 @@ namespace mwse::patch {
 
 		// Patch: Cache cell lookups by ID.
 		genJumpUnprotected(0x4BA9B0, reinterpret_cast<DWORD>(PatchRecordsHandlerGetCellByName), 0x5);
+		auto cell_dtor = &TES3::Cell::dtor;
+		genCallEnforced(0x4DB643, 0x4DB660, *reinterpret_cast<DWORD*>(&cell_dtor));
+		auto cell_setName = &TES3::Cell::setName;
+		genCallEnforced(0x4B8BD6, 0x4E25E0, *reinterpret_cast<DWORD*>(&cell_setName));
+		genCallEnforced(0x4BEF97, 0x4E25E0, *reinterpret_cast<DWORD*>(&cell_setName));
+		genCallEnforced(0x4DD4B5, 0x4BA610, reinterpret_cast<DWORD>(PatchCellLoadGetRegionSetup));
 
 		// Patch: Implement map-based lookup of references.
 		genJumpUnprotected(0x4F19F0, reinterpret_cast<DWORD>(PatchEntityListInsertAfter), 0x5);

@@ -170,6 +170,8 @@ namespace TES3 {
 		Cell * getCellByPosition(float x, float y);
 		Cell * getCellByName(const char* name);
 		Region* getRegion(const char* id);
+		static void clearCellNameCache(std::string_view name);
+		static void clearCellNameCache(const Cell* cell);
 
 		MagicEffect * getMagicEffect(int id);
 

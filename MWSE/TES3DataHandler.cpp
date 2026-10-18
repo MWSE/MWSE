@@ -644,8 +644,8 @@ namespace TES3 {
 
 	static std::unordered_map<std::string, Cell*> cellByNameCache;
 
-	static std::string normalizeCellName(const char* name) {
-		std::string normalized = name;
+	static std::string normalizeCellName(std::string_view name) {
+		std::string normalized(name);
 		se::string::to_lower(normalized);
 		return normalized;
 	}
@@ -672,6 +672,14 @@ namespace TES3 {
 		}
 
 		return nullptr;
+	}
+
+	void NonDynamicData::clearCellNameCache(std::string_view name) {
+		cellByNameCache.erase(normalizeCellName(name));
+	}
+
+	void NonDynamicData::clearCellNameCache(const Cell* cell) {
+		std::erase_if(cellByNameCache, [=](const auto& p) { return p.second == cell; });
 	}
 
 	const auto TES3_NonDynamicData_getRegionById = reinterpret_cast<Region * (__thiscall*)(NonDynamicData*, const char*)>(0x4BA610);

@@ -151,6 +151,7 @@ namespace TES3 {
 		//
 
 		static Cell* create();
+		void dtor();
 
 		Reference * getFirstObjectOfType(ObjectType::ObjectType, bool) const;
 
