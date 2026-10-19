@@ -10,24 +10,22 @@ namespace mwse {
 	class xSetCondition : InstructionInterface_t {
 	public:
 		xSetCondition();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetCondition xSetConditionInstance;
 
-	xSetCondition::xSetCondition() : mwse::InstructionInterface_t(OpCode::xSetCondition) {}
+	xSetCondition::xSetCondition() : InstructionInterface_t(OpCode::xSetCondition) {}
 
-	float xSetCondition::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetCondition::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		long value = Stack::getInstance().popLong();
+		long value = stack.popLong();
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << "xSetCondition: No reference provided." << std::endl;
-			}
-			Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
@@ -40,11 +38,11 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xSetCondition: Could not get attached VARNODE." << std::endl;
 			}
-			Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
-		Stack::getInstance().pushShort(1);
+		stack.pushShort(1);
 
 		return 0.0f;
 	}

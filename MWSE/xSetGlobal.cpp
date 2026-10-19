@@ -11,26 +11,27 @@ namespace mwse {
 	class xSetGlobal : InstructionInterface_t {
 	public:
 		xSetGlobal();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetGlobal xSetGlobalInstance;
 
-	xSetGlobal::xSetGlobal() : mwse::InstructionInterface_t(OpCode::xSetGlobal) {}
+	xSetGlobal::xSetGlobal() : InstructionInterface_t(OpCode::xSetGlobal) {}
 
-	float xSetGlobal::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwseString& variable = virtualMachine.getString(Stack::getInstance().popLong());
-		float value = Stack::getInstance().popFloat();
+	float xSetGlobal::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		mwseString& variable = virtualMachine.getString(stack.popLong());
+		float value = stack.popFloat();
 
 		TES3::GlobalVariable* global = TES3::DataHandler::get()->nonDynamicData->findGlobalVariable(variable.c_str());
 		if (global == nullptr) {
-			mwse::log::getLog() << "xSetGlobal: No global could be found with id '" << variable << "'." << std::endl;
-			mwse::Stack::getInstance().pushLong(false);
+			log::getLog() << "xSetGlobal: No global could be found with id '" << variable << "'." << std::endl;
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		global->value = value;
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

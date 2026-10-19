@@ -11,21 +11,19 @@ namespace mwse {
 	class xGetValue : InstructionInterface_t {
 	public:
 		xGetValue();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetValue xGetValueInstance;
 
-	xGetValue::xGetValue() : mwse::InstructionInterface_t(OpCode::xGetValue) {}
+	xGetValue::xGetValue() : InstructionInterface_t(OpCode::xGetValue) {}
 
-	float xGetValue::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetValue::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetValue: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -49,13 +47,13 @@ namespace mwse {
 		}
 		catch (std::exception& e) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetValue: " << e.what() << std::endl;
+				log::getLog() << "xGetValue: " << e.what() << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushLong(value);
+		stack.pushLong(value);
 
 		return 0.0f;
 	}

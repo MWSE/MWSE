@@ -2,12 +2,15 @@
 
 #include "OpCodes.h"
 
+#include "TES3Defines.h"
+
 namespace mwse {
 	class VMExecuteInterface;
 
 	class InstructionInterface_t {
 	public:
 		inline OpCode::OpCode_t getOpCode() const { return opcode; }
+		TES3::Reference* getReference(VMExecuteInterface& virtualMachine, std::string_view functionName) const;
 		virtual float execute(VMExecuteInterface& virtualMachine) = 0;
 		virtual void loadParameters(VMExecuteInterface& virtualMachine) {}
 	protected:

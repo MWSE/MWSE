@@ -9,40 +9,38 @@ namespace mwse {
 	class xModAttribute : InstructionInterface_t {
 	public:
 		xModAttribute();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xModAttribute xModAttributeInstance;
 
-	xModAttribute::xModAttribute() : mwse::InstructionInterface_t(OpCode::xModAttribute) {}
+	xModAttribute::xModAttribute() : InstructionInterface_t(OpCode::xModAttribute) {}
 
-	float xModAttribute::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
+	float xModAttribute::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Function called with too few arguments." << std::endl;
+				log::getLog() << "xModAttribute: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
 
-		long attributeId = mwse::Stack::getInstance().popLong();
-		float modValue = mwse::Stack::getInstance().popFloat();
+		long attributeId = stack.popLong();
+		float modValue = stack.popFloat();
 
 		// Verify attribute range.
 		if (attributeId < TES3::Attribute::FirstAttribute || attributeId > TES3::Attribute::LastAttribute) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Invalid attribute id: " << attributeId << std::endl;
+				log::getLog() << "xModAttribute: Invalid attribute id: " << attributeId << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Get script reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Called on invalid reference." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -50,9 +48,9 @@ namespace mwse {
 		TES3::ObjectType::ObjectType type = reference->baseObject->objectType;
 		if (type != TES3::ObjectType::NPC && type != TES3::ObjectType::Creature) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Called on non-NPC, non-creature reference." << std::endl;
+				log::getLog() << "xModAttribute: Called on non-NPC, non-creature reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -60,9 +58,9 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xModAttribute: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xModAttribute: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -81,7 +79,7 @@ namespace mwse {
 		mobileObject->attributes[attributeId].base = newValue;
 
 		// Push to indicate success.
-		mwse::Stack::getInstance().pushLong(1);
+		stack.pushLong(1);
 
 		return 0.0f;
 	}

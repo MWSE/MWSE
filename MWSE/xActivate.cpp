@@ -12,23 +12,17 @@ namespace mwse {
 	class xActivate : InstructionInterface_t {
 	public:
 		xActivate();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xActivate xActivateInstance;
 
 	xActivate::xActivate() : InstructionInterface_t(OpCode::xActivate) {}
 
-	float xActivate::execute(mwse::VMExecuteInterface& virtualMachine) {
-		// Get potential target.
-		long parameter = Stack::getInstance().popLong();
-
+	float xActivate::execute(VMExecuteInterface& virtualMachine) {
 		// Verify that the script is called on a valid reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << __FUNCTION__ << ": Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 
@@ -43,8 +37,9 @@ namespace mwse {
 
 		// Determine if the target is a reference.
 		TES3::Reference* target = nullptr;
+		auto& stack = Stack::getInstance();
 		try {
-			TES3::Reference* potential = reinterpret_cast<TES3::Reference*>(parameter);
+			auto potential = stack.popPointer<TES3::Reference*>();
 			if (potential && potential->objectType == TES3::ObjectType::Reference) {
 				target = potential;
 			}
@@ -83,7 +78,7 @@ namespace mwse {
 		// Call the original activate function.
 		TES3::Script* script = virtualMachine.getScript();
 		mwscript::Activate(script, target);
-		Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}
