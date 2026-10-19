@@ -106,6 +106,13 @@ MG_BCShrooms = 100
 chargenstate = -1.0
 ```
 
+To keep other lua mods out of a test, `lua_mods` allows limiting which will run. It uses module keys (the folder paths under `MWSE\mods` with dots between folders). When the key is not present (default behavior), every mod runs.
+
+```toml
+[test_environment]
+lua_mods = ["mer.ashfall"]
+```
+
 ### Main Window
 
 * The status bars at the bottom of the construction set have been widened. They should always have enough room to show the relevent information.
