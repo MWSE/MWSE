@@ -76,8 +76,34 @@ local function defaultSorter(a, b)
 	return a.load_std_order < b.load_std_order
 end
 
+-- A CSSE test environment's lua_mods lists the only non-core mods to run.
+local function filterTestEnvironmentMods(runtimes)
+	local test_environment = require("csse.environment").test_environment
+	local allowed = test_environment and test_environment.lua_mods
+	if (allowed == nil) then
+		return runtimes
+	end
+
+	local keys = {}
+	for _, key in ipairs(allowed) do
+		keys[key:lower()] = true
+	end
+
+	local filtered = {}
+	for _, runtime in ipairs(runtimes) do
+		if (runtime.core_mod or keys[runtime.key]) then
+			table.insert(filtered, runtime)
+		else
+			mwse.log("[LuaManager] Skipping mod not listed in the test environment's lua_mods: %s", runtime.key)
+			runtime.initialized = false
+			runtime.excluded_by_test_environment = true
+		end
+	end
+	return filtered
+end
+
 -- Gather a list of mods to execute.
-local runtimes = table.values(mwse.activeLuaMods) --- @diagnostic disable-line
+local runtimes = filterTestEnvironmentMods(table.values(mwse.activeLuaMods)) --- @diagnostic disable-line
 mwse.runtimes = runtimes
 
 -- Figure out some common data from the metadata.

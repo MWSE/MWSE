@@ -41,6 +41,16 @@ for file in lfs.dir(path) do
     end
 end
 
+--- A CSSE test environment's `lua_mods` can leave a mod out; it never runs, so its dependencies don't matter.
+---@param metadata table
+---@return boolean
+local function isExcludedByTestEnvironment(metadata)
+    local luaMod = table.get(metadata, "tools", {}).mwse
+    luaMod = luaMod and luaMod["lua-mod"]
+    local runtime = luaMod and mwse.activeLuaMods[luaMod:lower()]
+    return runtime ~= nil and runtime.excluded_by_test_environment == true
+end
+
 local function checkDependencies()
     logger:debug("Checking dependencies")
     --[[
@@ -59,6 +69,8 @@ local function checkDependencies()
                     logger:error("Could not load metadata file: %s", file)
                 elseif not metadata.package then
                     logger:error("Metadata file does not contain a package table: %s", file)
+                elseif isExcludedByTestEnvironment(metadata) then
+                    logger:debug("Skipping a mod the test environment leaves out: %s", file)
                 else
                     logger:debug("Checking dependencies for: %s", metadata.package.name or "[unknown]")
                     local manager = DependencyManager.new{
