@@ -11,37 +11,38 @@ namespace mwse {
 	class xGetBaseHandToHand : InstructionInterface_t {
 	public:
 		xGetBaseHandToHand();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseHandToHand xGetBaseHandToHandInstance;
 
-	xGetBaseHandToHand::xGetBaseHandToHand() : mwse::InstructionInterface_t(OpCode::xGetBaseHandToHand) {}
+	xGetBaseHandToHand::xGetBaseHandToHand() : InstructionInterface_t(OpCode::xGetBaseHandToHand) {}
 
-	float xGetBaseHandToHand::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseHandToHand::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseHandToHand: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseHandToHand: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseHandToHand: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseHandToHand: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::HandToHand].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::HandToHand].base);
 
 		return 0.0f;
 	}

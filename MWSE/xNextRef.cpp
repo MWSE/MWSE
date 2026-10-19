@@ -10,16 +10,17 @@ namespace mwse {
 	class xNextRef : InstructionInterface_t {
 	public:
 		xNextRef();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xNextRef xNextRefInstance;
 
-	xNextRef::xNextRef() : mwse::InstructionInterface_t(OpCode::xNextRef) {}
+	xNextRef::xNextRef() : InstructionInterface_t(OpCode::xNextRef) {}
 
-	float xNextRef::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xNextRef::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get REFR pointer as an argument.
-		TES3::Reference* reference = (TES3::Reference*)mwse::Stack::getInstance().popLong();
+		auto reference = stack.popPointer<TES3::Reference*>();
 
 		// Start looking for our next reference.
 		TES3::Reference* next = nullptr;
@@ -29,28 +30,28 @@ namespace mwse {
 				next = static_cast<TES3::Reference*>(reference->nextInCollection->skipDeletedObjects());
 
 				// If we found nothing, check the stored exterior references.
-				if (next == nullptr && mwse::tes3::exteriorRefs[0] != nullptr) {
-					next = mwse::tes3::exteriorRefs[0];
+				if (next == nullptr && tes3::exteriorRefs[0] != nullptr) {
+					next = tes3::exteriorRefs[0];
 					for (auto i = 0; i < 8; ++i) {
-						mwse::tes3::exteriorRefs[i] = mwse::tes3::exteriorRefs[i + 1];
+						tes3::exteriorRefs[i] = tes3::exteriorRefs[i + 1];
 					}
 				}
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xNextRef: Null argument." << std::endl;
+					log::getLog() << "xNextRef: Null argument." << std::endl;
 				}
 			}
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {
 			TES3::Script* script = virtualMachine.getScript();
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xNextRef: Invalid object given in script " << script->sourceMod->filename << "/" << script->header.name << ". Fix script to not save variables across saves!" << std::endl;
+				log::getLog() << "xNextRef: Invalid object given in script " << script->sourceMod->filename << "/" << script->header.name << ". Fix script to not save variables across saves!" << std::endl;
 			}
 			next = nullptr;
 		}
 
-		mwse::Stack::getInstance().pushLong((long)next);
+		stack.pushPointer(next);
 
 		return 0.0f;
 	}

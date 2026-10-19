@@ -12,44 +12,45 @@ namespace mwse {
 	class xSetProgressSkill : InstructionInterface_t {
 	public:
 		xSetProgressSkill();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetProgressSkill xSetProgressSkillInstance;
 
-	xSetProgressSkill::xSetProgressSkill() : mwse::InstructionInterface_t(OpCode::xSetProgressSkill) {}
+	xSetProgressSkill::xSetProgressSkill() : InstructionInterface_t(OpCode::xSetProgressSkill) {}
 
-	float xSetProgressSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetProgressSkill::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long skillIndex = mwse::Stack::getInstance().popLong();
-		float progress = mwse::Stack::getInstance().popFloat();
-		long normalized = mwse::Stack::getInstance().popLong();
+		long skillIndex = stack.popLong();
+		float progress = stack.popFloat();
+		long normalized = stack.popLong();
 
 		// Get the associated MACP record.
 		auto mobileObject = TES3::WorldController::get()->getMobilePlayer();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressSkill: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xSetProgressSkill: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Verify skill index.
 		if (skillIndex < TES3::SkillID::FirstSkill || skillIndex > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressSkill: Skill index out of bounds." << std::endl;
+				log::getLog() << "xSetProgressSkill: Skill index out of bounds." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Verify progress.
 		if (progress < 0) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetProgressSkill: Progress cannot be negative." << std::endl;
+				log::getLog() << "xSetProgressSkill: Progress cannot be negative." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -64,7 +65,7 @@ namespace mwse {
 		// Check for skill level up.
 		mobileObject->progressSkillLevelIfRequirementsMet(skillIndex);
 
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

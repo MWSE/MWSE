@@ -13,22 +13,23 @@ namespace mwse {
 	class xSetQuality : InstructionInterface_t {
 	public:
 		xSetQuality();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetQuality xSetQualityInstance;
 
-	xSetQuality::xSetQuality() : mwse::InstructionInterface_t(OpCode::xSetQuality) {}
+	xSetQuality::xSetQuality() : InstructionInterface_t(OpCode::xSetQuality) {}
 
-	float xSetQuality::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetQuality::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		float value = mwse::Stack::getInstance().popFloat();
+		float value = stack.popFloat();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetQuality: No reference provided." << std::endl;
+				log::getLog() << "xSetQuality: No reference provided." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -37,7 +38,7 @@ namespace mwse {
 		TES3::BaseObject* record = reference->baseObject;
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetQuality: No base record found." << std::endl;
+				log::getLog() << "xSetQuality: No base record found." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -63,11 +64,11 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetQuality: Call on unsupported record type: " << recordType << std::endl;
+				log::getLog() << "xSetQuality: Call on unsupported record type: " << recordType << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(valueSet);
+		stack.pushLong(valueSet);
 
 		return 0.0f;
 	}
