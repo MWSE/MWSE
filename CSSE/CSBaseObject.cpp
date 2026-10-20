@@ -7,9 +7,18 @@
 #include "CSRace.h"
 
 #include "BitUtil.h"
+#include "MemoryUtil.h"
 #include "StringUtil.h"
 
 namespace se::cs {
+	void* BaseObject::operator new(size_t size) {
+		return memory::_new(size);
+	}
+
+	void BaseObject::operator delete(void* block) {
+		memory::_delete(block);
+	}
+
 	const char* BaseObject::getObjectID() const {
 		return vtbl.baseObject->getObjectID(this);
 	}

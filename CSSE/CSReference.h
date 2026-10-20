@@ -78,8 +78,8 @@ namespace se::cs {
 			};
 		};
 		Attachment* firstAttachment; // 0x68
-		int sourceID;
-		int targetID; // Master index?
+		int sourceID; // 0x6C
+		int targetID; // 0x70. FRMR written on save.
 		NI::Pointer<NI::AVObject> selectionWidget; // 0x74. NiLines
 
 		Attachment* getAttachment(Attachment::Type type) const;

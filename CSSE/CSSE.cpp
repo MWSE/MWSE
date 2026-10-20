@@ -37,6 +37,8 @@
 
 #include "TextureRenderer.h"
 
+#include "PatchReferenceNumbers.h"
+
 #include "DarkMode.h"
 #include "IconOverride.h"
 #include "MemoryUtil.h"
@@ -508,9 +510,11 @@ namespace se::cs {
 
 		const auto CS_RecordHandler_LoadFiles = reinterpret_cast<void(__thiscall*)(RecordHandler*)>(0x501500);
 		void __fastcall PatchOnLoadFiles(RecordHandler* recordHandler) {
+			patch::reference_numbers::onBeforeFilesLoaded();
 			CS_RecordHandler_LoadFiles(recordHandler);
 			metadata::reloadModMetadata();
 			se::cs::dialog::layer_window::loadOrCreateLayers();
+			patch::reference_numbers::onFilesLoaded(*recordHandler);
 		}
 
 		//
@@ -758,6 +762,7 @@ namespace se::cs {
 		dialog::use_report_window::installPatches();
 		dialog::layer_window::installPatches();
 		TextureRenderer::installPatches();
+		patch::reference_numbers::installPatches();
 	}
 
 	void CSSE::UpdateCurrentDirectory() const {
