@@ -2,7 +2,6 @@
 
 #include "LogUtil.h"
 #include "MemoryUtil.h"
-#include "PathUtil.h"
 #include "Settings.h"
 #include "StringUtil.h"
 
@@ -19,6 +18,9 @@ namespace se::cs::patch::reference_numbers {
 	constexpr auto MaxRefIndexGlobal = "MWSE_MAX_REF_INDEX";
 
 	struct FileState {
+		// Identifies the file for the whole session. GameFile objects are freed by the CS (for example after autosaving),
+		// so nothing here keeps a pointer to one.
+		DWORD id = 0;
 		DWORD highest = 0;
 		std::unordered_set<DWORD> writtenThisSave;
 		bool logged = false;
@@ -27,11 +29,12 @@ namespace se::cs::patch::reference_numbers {
 	std::unordered_map<std::string, FileState> fileStates;
 
 	// The file the numbering continues from: the loaded active file, then the last file saved to.
-	GameFile* loadedActiveFile = nullptr;
+	// States are never erased, so the pointer stays valid.
+	const FileState* continuedFile = nullptr;
 
 	// Which file a reference was loaded from or last saved to. The CS reassigns source files when merging plugins.
 	struct LoadOrigin {
-		const GameFile* file;
+		DWORD fileId;
 		DWORD number;
 	};
 	std::unordered_map<const Reference*, LoadOrigin> loadOrigins;
@@ -43,7 +46,11 @@ namespace se::cs::patch::reference_numbers {
 	}
 
 	FileState& getState(const GameFile& file) {
-		return fileStates[getFileKey(file)];
+		const auto [it, inserted] = fileStates.try_emplace(getFileKey(file));
+		if (inserted) {
+			it->second.id = static_cast<DWORD>(fileStates.size());
+		}
+		return it->second;
 	}
 
 	bool hasValidNumber(const Reference& reference) {
@@ -62,12 +69,12 @@ namespace se::cs::patch::reference_numbers {
 		if (origin == loadOrigins.end() || origin->second.number != static_cast<DWORD>(reference.targetID)) {
 			return true;
 		}
-		return origin->second.file == &file || origin->second.file == loadedActiveFile;
+		return origin->second.fileId == getState(file).id || (continuedFile && origin->second.fileId == continuedFile->id);
 	}
 
 	bool wasLoadedFromFile(const Reference& reference, const GameFile& file) {
 		const auto origin = loadOrigins.find(&reference);
-		return origin != loadOrigins.end() && origin->second.file == &file && origin->second.number == static_cast<DWORD>(reference.targetID);
+		return origin != loadOrigins.end() && origin->second.fileId == getState(file).id && origin->second.number == static_cast<DWORD>(reference.targetID);
 	}
 
 	DWORD getNewReferenceNumber(GameFile& file, FileState& state) {
@@ -100,67 +107,18 @@ namespace se::cs::patch::reference_numbers {
 	}
 
 	//
-	// MWSE_MAX_REF_INDEX is read straight from the active plugin, so other plugins' copies don't matter.
+	// MWSE_MAX_REF_INDEX is read by the CS's own global loader, once for each file that has it, so other plugins' copies don't matter.
 	//
 
-	// CS-saved files store globals right after game settings, so a master's global can be found without reading the whole file.
-	std::optional<DWORD> readMaxRefIndex(const std::filesystem::path& path, bool stopAfterGlobals = false) {
-		std::ifstream file(path, std::ios::binary);
-		if (!file.is_open()) {
-			return {};
+	void onGlobalLoaded(const GlobalVariable& global, const GameFile& file) {
+		if (!string::iequal(global.name, MaxRefIndexGlobal)) {
+			return;
 		}
 
-		struct RecordHeader {
-			char tag[4];
-			std::uint32_t size;
-			std::uint32_t unknown;
-			std::uint32_t flags;
-		};
-		static_assert(sizeof(RecordHeader) == 16);
-
-		RecordHeader header = {};
-		while (file.read(reinterpret_cast<char*>(&header), sizeof(header))) {
-			if (stopAfterGlobals && std::memcmp(header.tag, "TES3", 4) != 0 && std::memcmp(header.tag, "GMST", 4) != 0 && std::memcmp(header.tag, "GLOB", 4) != 0) {
-				break;
-			}
-
-			if (std::memcmp(header.tag, "GLOB", 4) != 0) {
-				file.seekg(header.size, std::ios::cur);
-				continue;
-			}
-
-			std::vector<char> data(header.size);
-			if (!file.read(data.data(), data.size())) {
-				break;
-			}
-
-			std::string_view name;
-			std::optional<float> value;
-			for (size_t i = 0; i + 8 <= data.size();) {
-				std::uint32_t size = 0;
-				std::memcpy(&size, &data[i + 4], sizeof(size));
-				const auto payload = i + 8;
-				if (payload + size > data.size()) {
-					break;
-				}
-
-				if (std::memcmp(&data[i], "NAME", 4) == 0) {
-					name = std::string_view(&data[payload], strnlen(&data[payload], size));
-				}
-				else if (std::memcmp(&data[i], "FLTV", 4) == 0 && size == sizeof(float)) {
-					float f = 0.0f;
-					std::memcpy(&f, &data[payload], sizeof(f));
-					value = f;
-				}
-				i = payload + size;
-			}
-
-			if (string::iequal(name, MaxRefIndexGlobal) && value && *value >= 0.0f && *value <= float(MaxReferenceNumber)) {
-				return static_cast<DWORD>(*value);
-			}
+		if (global.value >= 0.0f && global.value <= static_cast<float>(MaxReferenceNumber)) {
+			auto& state = getState(file);
+			state.highest = std::max(state.highest, static_cast<DWORD>(global.value));
 		}
-
-		return {};
 	}
 
 	void writeMaxRefIndex(RecordHandler& recordHandler, GameFile& file, DWORD highest) {
@@ -170,8 +128,7 @@ namespace se::cs::patch::reference_numbers {
 
 		auto global = recordHandler.getGlobal(MaxRefIndexGlobal);
 		if (global == nullptr) {
-			// The CS frees globals itself, so allocate with its allocator.
-			global = new (memory::_new(sizeof(GlobalVariable))) GlobalVariable(MaxRefIndexGlobal);
+			global = new GlobalVariable(MaxRefIndexGlobal);
 			global->valueType = 'l';
 			global->sourceFile = &file;
 			recordHandler.globals->push_back(global);
@@ -194,9 +151,8 @@ namespace se::cs::patch::reference_numbers {
 		}
 
 		reference->targetID = static_cast<int>(formId);
-		loadOrigins[reference] = { file, formId };
-
 		auto& state = getState(*file);
+		loadOrigins[reference] = { state.id, formId };
 		state.highest = std::max(state.highest, formId);
 	}
 
@@ -213,8 +169,8 @@ namespace se::cs::patch::reference_numbers {
 	void __cdecl OnBeforeSaveGlobals(RecordHandler* recordHandler, GameFile* file) {
 		auto& state = getState(*file);
 		state.writtenThisSave.clear();
-		if (loadedActiveFile && loadedActiveFile != file) {
-			state.highest = std::max(state.highest, getState(*loadedActiveFile).highest);
+		if (continuedFile && continuedFile != &state) {
+			state.highest = std::max(state.highest, continuedFile->highest);
 		}
 
 		std::unordered_set<DWORD> used;
@@ -226,7 +182,7 @@ namespace se::cs::patch::reference_numbers {
 		// Merge to Masters: the master's own references are written with their number as it is,
 		// and the merged plugin's references are added after them.
 		const auto savingMaster = file->getIsMasterFile();
-		const auto mergingIntoMaster = savingMaster && file != loadedActiveFile;
+		const auto mergingIntoMaster = savingMaster && continuedFile != &state;
 		if (savingMaster) {
 			forEachSavedReference(*recordHandler, *file, [&](Reference& reference) {
 				if (reference.isFromMaster() && hasValidNumber(reference)) {
@@ -271,9 +227,9 @@ namespace se::cs::patch::reference_numbers {
 
 		// The numbering continues from the saved file, so saving under another name again keeps these numbers.
 		for (auto reference : saved) {
-			loadOrigins[reference] = { file, static_cast<DWORD>(reference->targetID) };
+			loadOrigins[reference] = { state.id, static_cast<DWORD>(reference->targetID) };
 		}
-		loadedActiveFile = file;
+		continuedFile = &state;
 
 		writeMaxRefIndex(*recordHandler, *file, state.highest);
 
@@ -370,6 +326,19 @@ namespace se::cs::patch::reference_numbers {
 		}
 	}
 
+	// Wraps GlobalVariable::loadObjectSpecific, so the globals of every loaded file are seen, masters included.
+	using LoadGlobalFunction = bool(__thiscall*)(GlobalVariable*, GameFile*);
+	constexpr DWORD LoadGlobalVtableEntry = 0x6757A4;
+	constexpr DWORD LoadGlobalOriginal = 0x4010C8;
+
+	bool __fastcall PatchLoadGlobal(GlobalVariable* global, DWORD _EDX_, GameFile* file) {
+		const auto result = reinterpret_cast<LoadGlobalFunction>(LoadGlobalOriginal)(global, file);
+		if (result) {
+			onGlobalLoaded(*global, *file);
+		}
+		return result;
+	}
+
 	bool bytesMatch(DWORD address, std::initializer_list<BYTE> expected) {
 		auto current = reinterpret_cast<const BYTE*>(address);
 		for (const auto b : expected) {
@@ -383,6 +352,7 @@ namespace se::cs::patch::reference_numbers {
 	bool installed = false;
 
 	void onBeforeFilesLoaded() {
+		continuedFile = nullptr;
 		loadOrigins.clear();
 	}
 
@@ -391,28 +361,12 @@ namespace se::cs::patch::reference_numbers {
 			return;
 		}
 
-		loadedActiveFile = recordHandler.activeFile;
-		if (loadedActiveFile == nullptr) {
+		continuedFile = nullptr;
+		if (recordHandler.activeFile == nullptr) {
 			return;
 		}
 
-		auto& file = *recordHandler.activeFile;
-		if (const auto value = readMaxRefIndex(path::getDataFilesPath() / file.fileName)) {
-			auto& state = getState(file);
-			state.highest = std::max(state.highest, *value);
-		}
-
-		// Masters can be merged into, and their global may be overridden by the active plugin's.
-		for (auto i = 0; i < recordHandler.activeModCount; ++i) {
-			const auto master = recordHandler.activeGameFiles[i];
-			if (master == nullptr || master == loadedActiveFile || !master->getIsMasterFile()) {
-				continue;
-			}
-			if (const auto value = readMaxRefIndex(path::getDataFilesPath() / master->fileName, true)) {
-				auto& state = getState(*master);
-				state.highest = std::max(state.highest, *value);
-			}
-		}
+		continuedFile = &getState(*recordHandler.activeFile);
 	}
 
 	void installPatches() {
@@ -423,7 +377,8 @@ namespace se::cs::patch::reference_numbers {
 		const bool valid = bytesMatch(0x53657A, { 0x33, 0xC0, 0x89, 0x46, 0x70, 0x89, 0x46, 0x6C, 0x50 })
 			&& bytesMatch(0x53877D, { 0x8B, 0x44, 0x24, 0x10, 0x85, 0xC0, 0x75, 0x11 })
 			&& bytesMatch(0x538785, { 0x8B, 0x86, 0xEC, 0x04, 0x00, 0x00, 0x40, 0x89, 0x86, 0xEC, 0x04, 0x00, 0x00, 0x89, 0x44, 0x24, 0x10 })
-			&& bytesMatch(0x502295, { 0x68, 0x94, 0xD9, 0x6B, 0x00, 0xE8, 0x5E, 0x09, 0xF0, 0xFF });
+			&& bytesMatch(0x502295, { 0x68, 0x94, 0xD9, 0x6B, 0x00, 0xE8, 0x5E, 0x09, 0xF0, 0xFF })
+			&& bytesMatch(LoadGlobalVtableEntry, { 0xC8, 0x10, 0x40, 0x00 });
 		if (!valid) {
 			log::stream << "[ReferenceNumbers] Unexpected code in the Construction Set executable. Patch not installed." << std::endl;
 			return;
@@ -435,6 +390,7 @@ namespace se::cs::patch::reference_numbers {
 		genJumpUnprotected(0x53877D, reinterpret_cast<DWORD>(PatchSaveReferenceNumber), 0x8);
 		genJumpUnprotected(0x538785, reinterpret_cast<DWORD>(PatchSaveNewReferenceNumber), 0x11);
 		genJumpUnprotected(0x502295, reinterpret_cast<DWORD>(PatchBeforeSaveGlobals), 0xA);
+		memory::writeValueEnforced<DWORD>(LoadGlobalVtableEntry, LoadGlobalOriginal, reinterpret_cast<DWORD>(PatchLoadGlobal));
 
 		installed = true;
 	}
