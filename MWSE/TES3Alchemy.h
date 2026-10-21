@@ -12,7 +12,8 @@ namespace TES3 {
 		typedef unsigned short value_type;
 
 		enum Flag : value_type {
-			AutoCalc = 0x1
+			AutoCalc = 0x1,
+			Dynamic = 0x2
 		};
 	}
 

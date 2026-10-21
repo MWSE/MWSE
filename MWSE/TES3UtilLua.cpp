@@ -3218,7 +3218,7 @@ namespace mwse::lua {
 			// Dynamically create our potion.
 			auto dynamicPotion = new TES3::Alchemy();
 			dynamicPotion->setName(name);
-			dynamicPotion->flags |= 0x2;
+			dynamicPotion->flags |= TES3::AlchemyFlag::Dynamic;
 			TES3::DataHandler::get()->nonDynamicData->addNewObject(dynamicPotion);
 
 			// Assign effects.
