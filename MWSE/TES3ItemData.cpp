@@ -129,7 +129,7 @@ namespace TES3 {
 		// Due to checks in TES3_IsItemDataStackable, after this point item and itemData are non-null.
 
 		// Bound items must not lose item data.
-		if (itemData->flags & ItemDataFlags::ItemDataFlag_BoundItem) {
+		if (itemData->isBoundItem()) {
 			return false;
 		}
 
