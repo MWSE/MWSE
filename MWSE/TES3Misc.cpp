@@ -54,15 +54,15 @@ namespace TES3 {
 	}
 	
 	bool Misc::getIsKey() const {
-		return flags & 1;
+		return flags & MiscItemFlags::Key;
 	}
 
 	void Misc::setIsKey(bool value) {
 		if (value) {
-			flags |= 1;
+			flags |= MiscItemFlags::Key;
 		}
 		else {
-			flags &= ~1;
+			flags &= ~MiscItemFlags::Key;
 		}
 	}
 
