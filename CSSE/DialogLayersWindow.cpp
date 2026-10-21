@@ -75,7 +75,11 @@ namespace se::cs::dialog::layer_window {
 	NI::Pointer<NI::AlphaProperty> LayerData::getLayerAlphaProperty() {
 		if (!layerAlphaProperty) {
 			layerAlphaProperty = new NI::AlphaProperty();
-			layerAlphaProperty->flags = 3821;
+			layerAlphaProperty->flags = NI::AlphaProperty::ALPHA_MASK
+				| (D3DBLEND_INVSRCALPHA << NI::AlphaProperty::SRC_BLEND_POS)
+				| (D3DBLEND_DESTALPHA << NI::AlphaProperty::DEST_BLEND_POS)
+				| NI::AlphaProperty::TEST_ENABLE_MASK
+				| (D3DCMP_EQUAL << NI::AlphaProperty::TEST_FUNC_POS);
 			layerAlphaProperty->alphaTestRef = 255;
 		}
 		return layerAlphaProperty;
