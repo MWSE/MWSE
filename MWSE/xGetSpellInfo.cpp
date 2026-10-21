@@ -38,7 +38,7 @@ namespace mwse {
 			cost = spell->magickaCost;
 			effects = spell->getActiveEffectCount();
 			flags = spell->spellFlags;
-			origin = spell->objectFlags & 0x3;
+			origin = spell->objectFlags & (TES3::ObjectFlag::FromMaster | TES3::ObjectFlag::Modified);
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
