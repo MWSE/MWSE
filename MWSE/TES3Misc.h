@@ -6,6 +6,18 @@
 #include "NIIteratedList.h"
 
 namespace TES3 {
+	namespace MiscItemFlags {
+		typedef unsigned int value_type;
+
+		enum Flag : value_type {
+			Key = 0x1
+		};
+
+		enum FlagBit {
+			KeyBit = 0
+		};
+	}
+
 	struct Misc : Item {
 		NI::IteratedList<TES3::BaseObject*> stolenList; // 0x30
 		char * name; // 0x44

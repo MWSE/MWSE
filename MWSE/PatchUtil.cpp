@@ -1214,7 +1214,7 @@ namespace mwse::patch {
 		}
 
 		// Perform overwritten code.
-		if (TES3::WorldController::get()->menuController->gameplayFlags & 0x800000) {
+		if (TES3::WorldController::get()->menuController->getShowPathGrid()) {
 			pathGrid->show();
 		}
 	}

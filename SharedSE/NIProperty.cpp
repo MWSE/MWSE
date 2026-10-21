@@ -80,7 +80,11 @@ namespace NI {
 		setFlagBitField(0, 0x7, 10);
 #endif
 		alphaTestRef = 255; // Default to 0% alpha threshold
-		flags = 4844; // Default flags for alpha property from NifSkope
+		// Default flags for alpha property from NifSkope
+		flags = (D3DBLEND_INVSRCALPHA << SRC_BLEND_POS)
+			| (D3DBLEND_DESTALPHA << DEST_BLEND_POS)
+			| TEST_ENABLE_MASK
+			| (D3DCMP_LESSEQUAL << TEST_FUNC_POS);
 	}
 
 	AlphaProperty::~AlphaProperty() {
