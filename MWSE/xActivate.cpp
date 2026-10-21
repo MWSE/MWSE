@@ -66,13 +66,13 @@ namespace mwse {
 			activator->type = TES3::AttachmentType::Action;
 			activator->next = nullptr;
 			activator->reference = nullptr;
-			activator->flags = 1;
+			activator->flags = TES3::ActionFlags::Flag::UseEnabled;
 
 			target->insertAttachment(activator);
 		}
 
 		// Ensure that our flags and reference is accurate.
-		activator->flags = 2;
+		activator->flags = TES3::ActionFlags::Flag::OnActivate;
 		activator->reference = reference;
 
 		// Call the original activate function.
