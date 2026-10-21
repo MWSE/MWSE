@@ -6,7 +6,7 @@ namespace mwse {
 	class xSetRef : public InstructionInterface_t {
 	public:
 		xSetRef();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetRef xSetRefInstance;

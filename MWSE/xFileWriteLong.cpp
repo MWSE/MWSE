@@ -7,23 +7,24 @@ namespace mwse {
 	class xFileWriteLong : InstructionInterface_t {
 	public:
 		xFileWriteLong();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileWriteLong xFileWriteLongInstance;
 
-	xFileWriteLong::xFileWriteLong() : mwse::InstructionInterface_t(OpCode::xFileWriteLong) {}
+	xFileWriteLong::xFileWriteLong() : InstructionInterface_t(OpCode::xFileWriteLong) {}
 
-	float xFileWriteLong::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
-			mwse::log::getLog() << "xFileWriteLong: Function called with too few arguments." << std::endl;
+	float xFileWriteLong::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
+			log::getLog() << "xFileWriteLong: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long value = mwse::Stack::getInstance().popLong();
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		long value = stack.popLong();
 
-		mwse::FileSystem::getInstance().writeLong(fileName, value);
+		FileSystem::getInstance().writeLong(fileName, value);
 
 		return 0.0f;
 	}

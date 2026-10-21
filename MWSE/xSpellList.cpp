@@ -11,18 +11,19 @@ namespace mwse {
 	class xSpellList : InstructionInterface_t {
 	public:
 		xSpellList();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		void pushErrorResponse();
 	};
 
 	static xSpellList xSpellListInstance;
 
-	xSpellList::xSpellList() : mwse::InstructionInterface_t(OpCode::xSpellList) {}
+	xSpellList::xSpellList() : InstructionInterface_t(OpCode::xSpellList) {}
 
-	float xSpellList::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSpellList::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get our next node.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(mwse::Stack::getInstance().popLong());
+		auto node = reinterpret_cast<NI::IteratedList<TES3::Spell*>::Node*>(stack.popLong());
 
 		// Arguments we will be returning.
 		long spellCount = 0;
@@ -37,7 +38,7 @@ namespace mwse {
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSpellList: Could not get reference." << std::endl;
+				log::getLog() << "xSpellList: Could not get reference." << std::endl;
 			}
 			pushErrorResponse();
 			return 0.0f;
@@ -46,7 +47,7 @@ namespace mwse {
 		// Function only works on NPCs.
 		if (reference->baseObject->objectType != TES3::ObjectType::NPC) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSpellList: Called on non-NPC reference." << std::endl;
+				log::getLog() << "xSpellList: Called on non-NPC reference." << std::endl;
 			}
 			pushErrorResponse();
 			return 0.0f;
@@ -81,21 +82,21 @@ namespace mwse {
 		spellFlags = spell->spellFlags;
 
 		// Push the data back to mwscript.
-		mwse::Stack::getInstance().pushLong((long)node->next);
-		mwse::Stack::getInstance().pushLong(spellFlags);
-		mwse::Stack::getInstance().pushLong(spellEffectCount);
-		mwse::Stack::getInstance().pushLong(spellCost);
-		mwse::Stack::getInstance().pushLong(spellType);
-		mwse::Stack::getInstance().pushString(spellName);
-		mwse::Stack::getInstance().pushString(spellId);
-		mwse::Stack::getInstance().pushLong(spellCount);
+		stack.pushLong((long)node->next);
+		stack.pushLong(spellFlags);
+		stack.pushLong(spellEffectCount);
+		stack.pushLong(spellCost);
+		stack.pushLong(spellType);
+		stack.pushString(spellName);
+		stack.pushString(spellId);
+		stack.pushLong(spellCount);
 
 		return 0.0f;
 	}
 
 	void xSpellList::pushErrorResponse() {
 		for (auto i = 0; i < 8; ++i) {
-			mwse::Stack::getInstance().pushLong(0);
+			Stack::getInstance().pushLong(0);
 		}
 	}
 }

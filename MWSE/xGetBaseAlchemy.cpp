@@ -11,37 +11,38 @@ namespace mwse {
 	class xGetBaseAlchemy : InstructionInterface_t {
 	public:
 		xGetBaseAlchemy();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseAlchemy xGetBaseAlchemyInstance;
 
-	xGetBaseAlchemy::xGetBaseAlchemy() : mwse::InstructionInterface_t(OpCode::xGetBaseAlchemy) {}
+	xGetBaseAlchemy::xGetBaseAlchemy() : InstructionInterface_t(OpCode::xGetBaseAlchemy) {}
 
-	float xGetBaseAlchemy::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseAlchemy::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAlchemy: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseAlchemy: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAlchemy: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseAlchemy: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::Alchemy].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::Alchemy].base);
 
 		return 0.0f;
 	}

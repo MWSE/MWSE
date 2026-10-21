@@ -10,37 +10,38 @@ namespace mwse {
 	class xGetBaseMarksman : InstructionInterface_t {
 	public:
 		xGetBaseMarksman();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseMarksman xGetBaseMarksmanInstance;
 
-	xGetBaseMarksman::xGetBaseMarksman() : mwse::InstructionInterface_t(OpCode::xGetBaseMarksman) {}
+	xGetBaseMarksman::xGetBaseMarksman() : InstructionInterface_t(OpCode::xGetBaseMarksman) {}
 
-	float xGetBaseMarksman::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseMarksman::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseMarksman: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseMarksman: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseMarksman: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseMarksman: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::Marksman].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::Marksman].base);
 
 		return 0.0f;
 	}

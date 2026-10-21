@@ -20,7 +20,7 @@ namespace mwse {
 	class xEquipmentList : InstructionInterface_t {
 	public:
 		xEquipmentList();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 
 	private:
 		bool nodeMatchesFilter(NI::IteratedList<TES3::EquipmentStack*>::Node* node, long typeFilter, long subtypeFilter);
@@ -29,58 +29,59 @@ namespace mwse {
 
 	static xEquipmentList xEquipmentListInstance;
 
-	xEquipmentList::xEquipmentList() : mwse::InstructionInterface_t(OpCode::xEquipmentList) {}
+	xEquipmentList::xEquipmentList() : InstructionInterface_t(OpCode::xEquipmentList) {}
 
-	float xEquipmentList::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xEquipmentList::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		auto node = reinterpret_cast<NI::IteratedList<TES3::EquipmentStack*>::Node*>(mwse::Stack::getInstance().popLong());
-		long typeFilter = mwse::Stack::getInstance().popLong();
-		long subtypeFilter = mwse::Stack::getInstance().popLong() - 1;
+		auto node = reinterpret_cast<NI::IteratedList<TES3::EquipmentStack*>::Node*>(stack.popLong());
+		long typeFilter = stack.popLong();
+		long subtypeFilter = stack.popLong() - 1;
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
-			mwse::log::getLog() << "xEquipmentList: Called without refrence." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushFloat(0.0f);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			log::getLog() << "xEquipmentList: Called without refrence." << std::endl;
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushFloat(0.0f);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Verify actor state.
 		TES3::Actor* actor = reinterpret_cast<TES3::Actor*>(reference->baseObject);
 		if (!actor->isMobileCapableActor()) {
-			mwse::log::getLog() << "xEquipmentList: Called on non-actor." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushFloat(0.0f);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			log::getLog() << "xEquipmentList: Called on non-actor." << std::endl;
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushFloat(0.0f);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		// Make sure the object isn't a base actor.
 		if (actor->isBaseActor()) {
-			mwse::log::getLog() << "xEquipmentList: Called on base actor. Must be used on instance." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushFloat(0.0f);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			log::getLog() << "xEquipmentList: Called on base actor. Must be used on instance." << std::endl;
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushFloat(0.0f);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -141,15 +142,15 @@ namespace mwse {
 		}
 
 		// Push values to the stack.
-		mwse::Stack::getInstance().pushLong((long)next);
-		mwse::Stack::getInstance().pushString(enchantId);
-		mwse::Stack::getInstance().pushString(name);
-		mwse::Stack::getInstance().pushFloat(weight);
-		mwse::Stack::getInstance().pushLong(value);
-		mwse::Stack::getInstance().pushLong(subtype);
-		mwse::Stack::getInstance().pushLong(type);
-		mwse::Stack::getInstance().pushLong(count);
-		mwse::Stack::getInstance().pushString(id);
+		stack.pushLong((long)next);
+		stack.pushString(enchantId);
+		stack.pushString(name);
+		stack.pushFloat(weight);
+		stack.pushLong(value);
+		stack.pushLong(subtype);
+		stack.pushLong(type);
+		stack.pushLong(count);
+		stack.pushString(id);
 
 		return 0.0f;
 	}

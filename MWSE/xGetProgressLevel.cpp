@@ -9,34 +9,35 @@ namespace mwse {
 	class xGetProgressLevel : InstructionInterface_t {
 	public:
 		xGetProgressLevel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const long INVALID_VALUE = -1;
 	};
 
 	static xGetProgressLevel xGetProgressLevelInstance;
 
-	xGetProgressLevel::xGetProgressLevel() : mwse::InstructionInterface_t(OpCode::xGetProgressLevel) {}
+	xGetProgressLevel::xGetProgressLevel() : InstructionInterface_t(OpCode::xGetProgressLevel) {}
 
-	float xGetProgressLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetProgressLevel::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the player's associated MACP record.
 		auto mobileObject = TES3::WorldController::get()->getMobilePlayer();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetProgressLevel: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetProgressLevel: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(INVALID_VALUE);
+			stack.pushLong(INVALID_VALUE);
 			return 0.0f;
 		}
 		else if (mobileObject->objectType != TES3::ObjectType::MobilePlayer) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetProgressLevel: Attached mobile object is not for the player." << std::endl;
+				log::getLog() << "xGetProgressLevel: Attached mobile object is not for the player." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(INVALID_VALUE);
+			stack.pushLong(INVALID_VALUE);
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushLong(mobileObject->levelUpProgress);
+		stack.pushLong(mobileObject->levelUpProgress);
 
 		return 0.0f;
 	}

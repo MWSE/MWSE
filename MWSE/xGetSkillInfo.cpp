@@ -11,18 +11,19 @@ namespace mwse {
 	class xGetSkillInfo : InstructionInterface_t {
 	public:
 		xGetSkillInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetSkillInfo xGetSkillInfoInstance;
 
-	xGetSkillInfo::xGetSkillInfo() : mwse::InstructionInterface_t(OpCode::xGetSkillInfo) {}
+	xGetSkillInfo::xGetSkillInfo() : InstructionInterface_t(OpCode::xGetSkillInfo) {}
 
-	float xGetSkillInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSkillInfo::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter.
-		long skillIndex = Stack::getInstance().popLong();
+		long skillIndex = stack.popLong();
 
 		// Return values.
 		long attributeId = TES3::Attribute::Invalid;
@@ -41,17 +42,17 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkillInfo: Skill index out of range." << std::endl;
+				log::getLog() << "xGetSkillInfo: Skill index out of range." << std::endl;
 			}
 		}
 
 		// Push desired values.
-		mwse::Stack::getInstance().pushFloat(actions[3]);
-		mwse::Stack::getInstance().pushFloat(actions[2]);
-		mwse::Stack::getInstance().pushFloat(actions[1]);
-		mwse::Stack::getInstance().pushFloat(actions[0]);
-		mwse::Stack::getInstance().pushLong(specialization);
-		mwse::Stack::getInstance().pushLong(attributeId);
+		stack.pushFloat(actions[3]);
+		stack.pushFloat(actions[2]);
+		stack.pushFloat(actions[1]);
+		stack.pushFloat(actions[0]);
+		stack.pushLong(specialization);
+		stack.pushLong(attributeId);
 
 		return 0.0f;
 	}
