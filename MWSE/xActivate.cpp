@@ -20,6 +20,9 @@ namespace mwse {
 	xActivate::xActivate() : InstructionInterface_t(OpCode::xActivate) {}
 
 	float xActivate::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		auto target = stack.popPointer<TES3::Reference*>();
+
 		// Verify that the script is called on a valid reference.
 		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
@@ -36,25 +39,9 @@ namespace mwse {
 		}
 
 		// Determine if the target is a reference.
-		TES3::Reference* target = nullptr;
-		auto& stack = Stack::getInstance();
-		try {
-			auto potential = stack.popPointer<TES3::Reference*>();
-			if (potential && potential->objectType == TES3::ObjectType::Reference) {
-				target = potential;
-			}
-		}
-		catch (std::exception&) {
+		if (target == nullptr || target->objectType != TES3::ObjectType::Reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << __FUNCTION__ << ": Target reference could not be resolved." << std::endl;
-			}
-			return 0.0f;
-		}
-
-		// Verify that the target reference was found.
-		if (target == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << __FUNCTION__ << ": Target reference is invalid." << std::endl;
 			}
 			return 0.0f;
 		}
