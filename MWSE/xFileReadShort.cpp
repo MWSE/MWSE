@@ -33,7 +33,8 @@ namespace mwse {
 		}
 
 		// Gather values into a temporary vector so they can be pushed onto the stack in reverse order.
-		std::vector<short> values(count);
+		std::vector<short> values;
+		values.reserve(count);
 		for (long i = 0; i < count; ++i) {
 			try {
 				short value = FileSystem::getInstance().readValue<short>(fileName);
