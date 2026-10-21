@@ -12,25 +12,26 @@ namespace mwse {
 	class xSetEffectInfo : InstructionInterface_t {
 	public:
 		xSetEffectInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetEffectInfo xSetEffectInfoInstance;
 
-	xSetEffectInfo::xSetEffectInfo() : mwse::InstructionInterface_t(OpCode::xSetEffectInfo) {}
+	xSetEffectInfo::xSetEffectInfo() : InstructionInterface_t(OpCode::xSetEffectInfo) {}
 
-	float xSetEffectInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetEffectInfo::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long targetType = Stack::getInstance().popLong();
-		mwseString& targetId = virtualMachine.getString(Stack::getInstance().popLong());
-		long effectIndex = Stack::getInstance().popLong();
-		long effectId = Stack::getInstance().popLong();
-		long effectSkillAttributeId = Stack::getInstance().popLong();
-		long effectRange = Stack::getInstance().popLong();
-		long effectArea = Stack::getInstance().popLong();
-		long effectDuration = Stack::getInstance().popLong();
-		long effectMagMin = Stack::getInstance().popLong();
-		long effectMagMax = Stack::getInstance().popLong();
+		long targetType = stack.popLong();
+		mwseString& targetId = virtualMachine.getString(stack.popLong());
+		long effectIndex = stack.popLong();
+		long effectId = stack.popLong();
+		long effectSkillAttributeId = stack.popLong();
+		long effectRange = stack.popLong();
+		long effectArea = stack.popLong();
+		long effectDuration = stack.popLong();
+		long effectMagMin = stack.popLong();
+		long effectMagMax = stack.popLong();
 
 		bool result = false;
 
@@ -45,7 +46,7 @@ namespace mwse {
 				}
 				else {
 					if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-						mwse::log::getLog() << "xSetEffectInfo: No spell record found with id '" << targetId << "'." << std::endl;
+						log::getLog() << "xSetEffectInfo: No spell record found with id '" << targetId << "'." << std::endl;
 					}
 				}
 			}
@@ -56,7 +57,7 @@ namespace mwse {
 				}
 				else {
 					if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-						mwse::log::getLog() << "xSetEffectInfo: No enchant record found with id '" << targetId << "'." << std::endl;
+						log::getLog() << "xSetEffectInfo: No enchant record found with id '" << targetId << "'." << std::endl;
 					}
 				}
 			}
@@ -67,13 +68,13 @@ namespace mwse {
 				}
 				else {
 					if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-						mwse::log::getLog() << "xSetEffectInfo: No alchemy record found with id '" << targetId << "'." << std::endl;
+						log::getLog() << "xSetEffectInfo: No alchemy record found with id '" << targetId << "'." << std::endl;
 					}
 				}
 			}
 			else {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xSetEffectInfo: Record type of " << targetType << " is not supported." << std::endl;
+					log::getLog() << "xSetEffectInfo: Record type of " << targetType << " is not supported." << std::endl;
 				}
 			}
 
@@ -84,11 +85,11 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
+				log::getLog() << "xSetEffectInfo: Invalid effect index. Value must be between 1 and 8." << std::endl;
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong(result);
+		stack.pushLong(result);
 		return 0.0f;
 	}
 }

@@ -28,29 +28,6 @@ namespace mwse {
 		return result;
 	}
 
-	short FileSystem::readShort(std::string_view fileName) {
-		short result = 0;
-		if (read(fileName, &result, sizeof(short)) != sizeof(short)) {
-			throw std::exception("Invalid size read.");
-		}
-		return result;
-	}
-
-	long FileSystem::readLong(std::string_view fileName) {
-		long result = 0;
-		if (read(fileName, &result, sizeof(long)) != sizeof(long)) {
-			throw std::exception("Invalid size read.");
-		}
-		return result;
-	}
-
-	float FileSystem::readFloat(std::string_view fileName) {
-		float result = 0.0f;
-		if (read(fileName, &result, sizeof(float)) != sizeof(float)) {
-			throw std::exception("Invalid size read.");
-		}
-		return result;
-	}
 
 	std::string FileSystem::readString(std::string_view fileName, bool stopAtEndOfLine) {
 		HANDLE file = getFile(fileName);
@@ -104,17 +81,6 @@ namespace mwse {
 		return buffer;
 	}
 
-	void FileSystem::writeShort(std::string_view fileName, const short value) {
-		write(fileName, &value, sizeof(short));
-	}
-
-	void FileSystem::writeLong(std::string_view fileName, const long value) {
-		write(fileName, &value, sizeof(long));
-	}
-
-	void FileSystem::writeFloat(std::string_view fileName, const float value) {
-		write(fileName, &value, sizeof(float));
-	}
 
 	void FileSystem::writeString(std::string_view fileName, std::string_view value, bool suppressNull) {
 		size_t length = value.length();

@@ -10,17 +10,18 @@ namespace mwse {
 	class xGetIngredientEffect : InstructionInterface_t {
 	public:
 		xGetIngredientEffect();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetIngredientEffect xGetIngredientEffectInstance;
 
-	xGetIngredientEffect::xGetIngredientEffect() : mwse::InstructionInterface_t(OpCode::xGetIngredientEffect) {}
+	xGetIngredientEffect::xGetIngredientEffect() : InstructionInterface_t(OpCode::xGetIngredientEffect) {}
 
-	float xGetIngredientEffect::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetIngredientEffect::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& id = virtualMachine.getString(Stack::getInstance().popLong());
-		long index = Stack::getInstance().popLong() - 1;
+		mwseString& id = virtualMachine.getString(stack.popLong());
+		long index = stack.popLong() - 1;
 
 		// Return values.
 		long effectEnumId = TES3::EffectID::None;
@@ -30,20 +31,20 @@ namespace mwse {
 		const auto ingredient = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Ingredient>(id);
 		if (ingredient == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetIngredientEffect: No ingredient record found with id '" << id << "'." << std::endl;
+				log::getLog() << "xGetIngredientEffect: No ingredient record found with id '" << id << "'." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(skillAttributeId);
-			mwse::Stack::getInstance().pushLong(effectEnumId);
+			stack.pushLong(skillAttributeId);
+			stack.pushLong(effectEnumId);
 			return 0.0f;
 		}
 
 		// Validate index.
 		if (index < 0 || index > 3) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetIngredientEffect: Invalid index. Value must be between 1 and 4." << std::endl;
+				log::getLog() << "xGetIngredientEffect: Invalid index. Value must be between 1 and 4." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(skillAttributeId);
-			mwse::Stack::getInstance().pushLong(effectEnumId);
+			stack.pushLong(skillAttributeId);
+			stack.pushLong(effectEnumId);
 			return 0.0f;
 		}
 
@@ -60,8 +61,8 @@ namespace mwse {
 			skillAttributeId = ingredient->effectSkillIds[index];
 		}
 
-		mwse::Stack::getInstance().pushLong(skillAttributeId);
-		mwse::Stack::getInstance().pushLong(effectEnumId);
+		stack.pushLong(skillAttributeId);
+		stack.pushLong(effectEnumId);
 
 		return 0.0f;
 	}

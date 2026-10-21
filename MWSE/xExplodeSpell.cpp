@@ -10,23 +10,20 @@ namespace mwse {
 	class xExplodeSpell : InstructionInterface_t {
 	public:
 		xExplodeSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xExplodeSpell xExplodeSpellInstance;
 
-	xExplodeSpell::xExplodeSpell() : mwse::InstructionInterface_t(OpCode::xExplodeSpell) {}
+	xExplodeSpell::xExplodeSpell() : InstructionInterface_t(OpCode::xExplodeSpell) {}
 
-	float xExplodeSpell::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xExplodeSpell::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		mwseString& id = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(Stack::getInstance().popLong());
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xExplodeSpell: Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 
@@ -34,14 +31,14 @@ namespace mwse {
 		TES3::BaseObject* spellTemplate = virtualMachine.getTemplate(id.c_str());
 		if (spellTemplate == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xExplodeSpell: No template found with id '" << id << "'." << std::endl;
+				log::getLog() << "xExplodeSpell: No template found with id '" << id << "'." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::ExplodeSpell(script, reference, spellTemplate);
+		mwscript::ExplodeSpell(script, reference, spellTemplate);
 
 		return 0.0f;
 	}

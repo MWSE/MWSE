@@ -8,20 +8,18 @@ namespace mwse {
 	{
 	public:
 		xRefType();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRefType xRefTypeInstance;
 
 	xRefType::xRefType() : InstructionInterface_t(OpCode::xRefType) {}
 
-	float xRefType::execute(mwse::VMExecuteInterface& virtualMachine) {
-		TES3::Reference* refr = virtualMachine.getReference();
+	float xRefType::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		TES3::Reference* refr = getReference(virtualMachine, __FUNCTION__);
 		if (refr == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xRefType: Called on invalid reference." << std::endl;
-			}
-			Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
@@ -29,7 +27,7 @@ namespace mwse {
 
 		long type = static_cast<long>(temp->objectType);
 
-		Stack::getInstance().pushLong(type);
+		stack.pushLong(type);
 
 		return 0.0f;
 	}

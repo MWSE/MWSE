@@ -11,14 +11,14 @@ namespace mwse {
 	class xGetMagic : InstructionInterface_t {
 	public:
 		xGetMagic();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetMagic xGetMagicInstance;
 
-	xGetMagic::xGetMagic() : mwse::InstructionInterface_t(OpCode::xGetMagic) {}
+	xGetMagic::xGetMagic() : InstructionInterface_t(OpCode::xGetMagic) {}
 
-	float xGetMagic::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetMagic::execute(VMExecuteInterface& virtualMachine) {
 		// Return values.
 		long type = 0;
 		const char* id = nullptr;
@@ -53,8 +53,9 @@ namespace mwse {
 		}
 
 		// Return type/id.
-		Stack::getInstance().pushString(id);
-		Stack::getInstance().pushLong(type);
+		auto& stack = Stack::getInstance();
+		stack.pushString(id);
+		stack.pushLong(type);
 
 		return 0.0f;
 	}

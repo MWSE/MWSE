@@ -12,24 +12,25 @@ namespace mwse {
 	class xGetProgressSkill : InstructionInterface_t {
 	public:
 		xGetProgressSkill();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetProgressSkill xGetProgressSkillInstance;
 
-	xGetProgressSkill::xGetProgressSkill() : mwse::InstructionInterface_t(OpCode::xGetProgressSkill) {}
+	xGetProgressSkill::xGetProgressSkill() : InstructionInterface_t(OpCode::xGetProgressSkill) {}
 
-	float xGetProgressSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetProgressSkill::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameter off the stack.
-		long skillIndex = mwse::Stack::getInstance().popLong();
+		long skillIndex = stack.popLong();
 		if (skillIndex < TES3::SkillID::FirstSkill || skillIndex > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetProgressSkill: Invalid skill index provided." << std::endl;
+				log::getLog() << "xGetProgressSkill: Invalid skill index provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -40,8 +41,8 @@ namespace mwse {
 		float normalized = 100.0f * progress / macp->getSkillRequirement(skillIndex);
 
 		// Push the desired values.
-		mwse::Stack::getInstance().pushFloat(normalized);
-		mwse::Stack::getInstance().pushFloat(progress);
+		stack.pushFloat(normalized);
+		stack.pushFloat(progress);
 
 		return 0.0f;
 	}
