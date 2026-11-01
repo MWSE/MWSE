@@ -6,6 +6,8 @@
 --- A data structure, off of the world controller, that handles input.
 --- @class tes3inputController
 --- @field creationFlags number *Read-only*. A bit field representing device capabilities and settings.
+--- @field gamepadCount integer *Read-only*. The number of gamepads and joysticks enumerated by the vanilla DirectInput controller, from 0 to 8. This is not a live connection status; vanilla device initialization and configuration apply.
+--- @field gamepadStates tes3gamepadState[] *Read-only*. The eight gamepad state slots, indexed from 1 to 8. Only the first gamepadCount slots are active. Zero-based gamepad ID n in events and helpers corresponds to gamepadStates[n + 1]. Includes both gamepads and joysticks enumerated by vanilla DirectInput.
 --- @field inputMaps tes3inputConfig[] *Read-only*. The array-style access to input bindings. To index this array use [tes3.keybind](https://mwse.github.io/MWSE/references/keybinds/) constants increased by `1`. For example, to get the input binding for steal action, you would do: `inputController.inputMaps[tes3.keybind.sneak + 1]`.
 --- @field keyboardState number[] *Read-only*. The array-style access to raw key states.
 --- @field mouseState tes3directInputMouseState *Read-only*. The raw DirectInput mouse state.
@@ -24,6 +26,24 @@ function tes3inputController:isCapsLockActive() end
 --- Returns true if either control modifier key is pressed.
 --- @return boolean isPressed True if either control key is pressed.
 function tes3inputController:isControlDown() end
+
+--- Returns whether a gamepad button is held. Returns false for an out-of-range gamepad or button ID.
+--- @param gamepad integer Zero-based gamepad ID, from 0 to gamepadCount - 1.
+--- @param button integer Zero-based DirectInput button ID, from 0 to 31. Button mappings depend on the device.
+--- @return boolean result No description yet available.
+function tes3inputController:isGamepadButtonDown(gamepad, button) end
+
+--- Returns whether a gamepad button changed from released to held in the latest input poll. Returns false for an out-of-range gamepad or button ID.
+--- @param gamepad integer Zero-based gamepad ID, from 0 to gamepadCount - 1.
+--- @param button integer Zero-based DirectInput button ID, from 0 to 31. Button mappings depend on the device.
+--- @return boolean result No description yet available.
+function tes3inputController:isGamepadButtonPressedThisFrame(gamepad, button) end
+
+--- Returns whether a gamepad button changed from held to released in the latest input poll. Returns false for an out-of-range gamepad or button ID.
+--- @param gamepad integer Zero-based gamepad ID, from 0 to gamepadCount - 1.
+--- @param button integer Zero-based DirectInput button ID, from 0 to 31. Button mappings depend on the device.
+--- @return boolean result No description yet available.
+function tes3inputController:isGamepadButtonReleasedThisFrame(gamepad, button) end
 
 --- Performs a key down test for a given scan key code.
 --- @param key tes3.scanCode The scan code to test. Constants available through [`tes3.scanCode`](https://mwse.github.io/MWSE/references/scan-codes/).

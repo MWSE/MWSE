@@ -73,6 +73,10 @@
 #include "LuaFilterInventorySelectEvent.h"
 #include "LuaFilterSoulGemTargetEvent.h"
 #include "LuaFrameEvent.h"
+#include "LuaGamepadAxisEvent.h"
+#include "LuaGamepadButtonDownEvent.h"
+#include "LuaGamepadButtonUpEvent.h"
+#include "LuaGamepadPovEvent.h"
 #include "LuaGenericUiActivatedEvent.h"
 #include "LuaGenericUiPostEvent.h"
 #include "LuaGenericUiPreEvent.h"
@@ -268,6 +272,10 @@ namespace mwse::lua::event {
 		usertypeDefinition["filterInventory"] = sol::property(&FilterInventoryEvent::getEventEnabled, &FilterInventoryEvent::setEventEnabled);
 		usertypeDefinition["filterInventorySelect"] = sol::property(&FilterInventorySelectEvent::getEventEnabled, &FilterInventorySelectEvent::setEventEnabled);
 		usertypeDefinition["filterSoulGemTarget"] = sol::property(&FilterSoulGemTargetEvent::getEventEnabled, &FilterSoulGemTargetEvent::setEventEnabled);
+		usertypeDefinition["gamepadAxis"] = sol::property(&GamepadAxisEvent::getEventEnabled, &GamepadAxisEvent::setEventEnabled);
+		usertypeDefinition["gamepadButtonDown"] = sol::property(&GamepadButtonDownEvent::getEventEnabled, &GamepadButtonDownEvent::setEventEnabled);
+		usertypeDefinition["gamepadButtonUp"] = sol::property(&GamepadButtonUpEvent::getEventEnabled, &GamepadButtonUpEvent::setEventEnabled);
+		usertypeDefinition["gamepadPov"] = sol::property(&GamepadPovEvent::getEventEnabled, &GamepadPovEvent::setEventEnabled);
 		usertypeDefinition["infoFilter"] = sol::property(&InfoFilterEvent::getEventEnabled, &InfoFilterEvent::setEventEnabled);
 		usertypeDefinition["infoGetText"] = sol::property(&InfoGetTextEvent::getEventEnabled, &InfoGetTextEvent::setEventEnabled);
 		usertypeDefinition["infoLinkResolve"] = sol::property(&InfoLinkResolveEvent::getEventEnabled, &InfoLinkResolveEvent::setEventEnabled);

@@ -21,6 +21,28 @@ A data structure, off of the world controller, that handles input.
 
 ***
 
+### `gamepadCount`
+<div class="search_terms" style="display: none">gamepadcount</div>
+
+*Read-only*. The number of gamepads and joysticks enumerated by the vanilla DirectInput controller, from 0 to 8. This is not a live connection status; vanilla device initialization and configuration apply.
+
+**Returns**:
+
+* `result` (integer)
+
+***
+
+### `gamepadStates`
+<div class="search_terms" style="display: none">gamepadstates</div>
+
+*Read-only*. The eight gamepad state slots, indexed from 1 to 8. Only the first gamepadCount slots are active. Zero-based gamepad ID n in events and helpers corresponds to gamepadStates[n + 1]. Includes both gamepads and joysticks enumerated by vanilla DirectInput.
+
+**Returns**:
+
+* `result` ([tes3gamepadState](../types/tes3gamepadState.md)[])
+
+***
+
 ### `inputMaps`
 <div class="search_terms" style="display: none">inputmaps</div>
 
@@ -120,6 +142,66 @@ local isPressed = myObject:isControlDown()
 **Returns**:
 
 * `isPressed` (boolean): True if either control key is pressed.
+
+***
+
+### `isGamepadButtonDown`
+<div class="search_terms" style="display: none">isgamepadbuttondown, gamepadbuttondown</div>
+
+Returns whether a gamepad button is held. Returns false for an out-of-range gamepad or button ID.
+
+```lua
+local result = myObject:isGamepadButtonDown(gamepad, button)
+```
+
+**Parameters**:
+
+* `gamepad` (integer): Zero-based gamepad ID, from 0 to gamepadCount - 1.
+* `button` (integer): Zero-based DirectInput button ID, from 0 to 31. Button mappings depend on the device.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isGamepadButtonPressedThisFrame`
+<div class="search_terms" style="display: none">isgamepadbuttonpressedthisframe, gamepadbuttonpressedthisframe</div>
+
+Returns whether a gamepad button changed from released to held in the latest input poll. Returns false for an out-of-range gamepad or button ID.
+
+```lua
+local result = myObject:isGamepadButtonPressedThisFrame(gamepad, button)
+```
+
+**Parameters**:
+
+* `gamepad` (integer): Zero-based gamepad ID, from 0 to gamepadCount - 1.
+* `button` (integer): Zero-based DirectInput button ID, from 0 to 31. Button mappings depend on the device.
+
+**Returns**:
+
+* `result` (boolean)
+
+***
+
+### `isGamepadButtonReleasedThisFrame`
+<div class="search_terms" style="display: none">isgamepadbuttonreleasedthisframe, gamepadbuttonreleasedthisframe</div>
+
+Returns whether a gamepad button changed from held to released in the latest input poll. Returns false for an out-of-range gamepad or button ID.
+
+```lua
+local result = myObject:isGamepadButtonReleasedThisFrame(gamepad, button)
+```
+
+**Parameters**:
+
+* `gamepad` (integer): Zero-based gamepad ID, from 0 to gamepadCount - 1.
+* `button` (integer): Zero-based DirectInput button ID, from 0 to 31. Button mappings depend on the device.
+
+**Returns**:
+
+* `result` (boolean)
 
 ***
 

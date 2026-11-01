@@ -170,6 +170,10 @@
     <ClInclude Include="LuaMobileProjectileActorCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileObjectCollisionEvent.h" />
     <ClInclude Include="LuaMobileProjectileTerrainCollisionEvent.h" />
+    <ClInclude Include="LuaGamepadAxisEvent.h" />
+    <ClInclude Include="LuaGamepadButtonDownEvent.h" />
+    <ClInclude Include="LuaGamepadButtonUpEvent.h" />
+    <ClInclude Include="LuaGamepadPovEvent.h" />
     <ClInclude Include="LuaMouseAxisEvent.h" />
     <ClInclude Include="LuaMouseButtonDownEvent.h" />
     <ClInclude Include="LuaMouseButtonUpEvent.h" />
@@ -601,6 +605,10 @@
     <ClCompile Include="LuaMobileObjectCollisionEvent.cpp" />
     <ClCompile Include="LuaMobileProjectileObjectCollisionEvent.cpp" />
     <ClCompile Include="LuaMobileProjectileTerrainCollisionEvent.cpp" />
+    <ClCompile Include="LuaGamepadAxisEvent.cpp" />
+    <ClCompile Include="LuaGamepadButtonDownEvent.cpp" />
+    <ClCompile Include="LuaGamepadButtonUpEvent.cpp" />
+    <ClCompile Include="LuaGamepadPovEvent.cpp" />
     <ClCompile Include="LuaMouseAxisEvent.cpp" />
     <ClCompile Include="LuaMouseButtonDownEvent.cpp" />
     <ClCompile Include="LuaMouseButtonUpEvent.cpp" />
@@ -1217,7 +1225,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;dinput8.lib;dxguid.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
@@ -1249,7 +1257,7 @@ copy /y "$(TargetDir)lua51.dll" "$(MorrowindDir)lua51.dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dbghelp.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;dinput8.lib;dxguid.lib;lua51.lib;luajit.lib;version.lib;Winmm.lib;Strmiids.lib;yaml-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />

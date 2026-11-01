@@ -241,6 +241,10 @@
 #include "LuaGenericUiActivatedEvent.h"
 #include "LuaGenericUiPostEvent.h"
 #include "LuaGenericUiPreEvent.h"
+#include "LuaGamepadAxisEvent.h"
+#include "LuaGamepadButtonDownEvent.h"
+#include "LuaGamepadButtonUpEvent.h"
+#include "LuaGamepadPovEvent.h"
 #include "LuaInfoGetTextEvent.h"
 #include "LuaInfoLinkResolveEvent.h"
 #include "LuaInfoResponseEvent.h"
@@ -1177,10 +1181,10 @@ namespace mwse::lua {
 		inputController->readKeyState();
 
 		// We only need to check the modifier key values once.
-		bool controlDown = inputController->isControlDown();
-		bool shiftDown = inputController->isShiftDown();
-		bool altDown = inputController->isAltDown();
-		bool superDown = inputController->isSuperDown();
+		const auto controlDown = inputController->isControlDown();
+		const auto shiftDown = inputController->isShiftDown();
+		const auto altDown = inputController->isAltDown();
+		const auto superDown = inputController->isSuperDown();
 
 		// Go through the keys to see if any of the states have changed, and launch an event based on that.
 		LuaManager& luaManager = LuaManager::getInstance();
@@ -1201,6 +1205,36 @@ namespace mwse::lua {
 
 			if (i == UINT8_MAX) {
 				break;
+			}
+		}
+
+		const auto gamepadCount = inputController->getGamepadCount();
+		for (auto gamepad = 0u; gamepad < gamepadCount; ++gamepad) {
+			for (auto button = 0u; button < 32u; ++button) {
+				if (event::GamepadButtonDownEvent::getEventEnabled() && inputController->isGamepadButtonPressedThisFrame(gamepad, button)) {
+					stateHandle.triggerEvent(new event::GamepadButtonDownEvent(gamepad, button));
+				}
+				if (event::GamepadButtonUpEvent::getEventEnabled() && inputController->isGamepadButtonReleasedThisFrame(gamepad, button)) {
+					stateHandle.triggerEvent(new event::GamepadButtonUpEvent(gamepad, button));
+				}
+			}
+			const auto& current = inputController->gamepadStates[gamepad].current;
+			const auto& previous = inputController->gamepadStates[gamepad].previous;
+			if (event::GamepadAxisEvent::getEventEnabled()) {
+				const LONG values[] = { current.lX, current.lY, current.lZ, current.lRx, current.lRy, current.lRz, current.rglSlider[0], current.rglSlider[1] };
+				const LONG previousValues[] = { previous.lX, previous.lY, previous.lZ, previous.lRx, previous.lRy, previous.lRz, previous.rglSlider[0], previous.rglSlider[1] };
+				for (auto axis = 0u; axis < 8u; ++axis) {
+					if (values[axis] != previousValues[axis]) {
+						stateHandle.triggerEvent(new event::GamepadAxisEvent(gamepad, axis, values[axis], previousValues[axis]));
+					}
+				}
+			}
+			if (event::GamepadPovEvent::getEventEnabled()) {
+				for (auto pov = 0u; pov < 4u; ++pov) {
+					if (current.rgdwPOV[pov] != previous.rgdwPOV[pov]) {
+						stateHandle.triggerEvent(new event::GamepadPovEvent(gamepad, pov, current.rgdwPOV[pov], previous.rgdwPOV[pov]));
+					}
+				}
 			}
 		}
 

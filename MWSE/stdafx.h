@@ -49,6 +49,7 @@
 #include <psapi.h>
 #include <dbghelp.h>
 #include <d3d8.h>
+#include <hidusage.h>
 
 // 3rd party library: fmt
 #define FMT_HEADER_ONLY
