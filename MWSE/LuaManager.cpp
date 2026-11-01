@@ -7018,7 +7018,7 @@ namespace mwse::lua {
 		realTimers->setClock(0.0);
 		simulateTimers->setClock(0.0);
 		const auto worldController = TES3::WorldController::get();
-		const auto gameTime = worldController ? worldController->getHighPrecisionSimulationTimestamp() : 0.0;
+		const auto gameTime = worldController && worldController->gvarGameHour ? worldController->getHighPrecisionSimulationTimestamp() : 0.0;
 		gameTimers->setClock(gameTime);
 	}
 
