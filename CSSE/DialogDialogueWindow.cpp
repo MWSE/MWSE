@@ -800,6 +800,22 @@ namespace se::cs::dialog::dialogue_window {
 		}
 	}
 
+	void PatchDialogProc_AfterNotify_InfoList_EndLabelEdit(DialogProcContext& context) {
+		// A cancelled or unchanged edit left the info alone.
+		if (context.getNotificationListViewDisplayInfo()->item.pszText == nullptr) {
+			return;
+		}
+
+		const auto userData = context.getUserData<UserData>();
+		const auto info = userData->currentInfo;
+		if (info == nullptr) {
+			return;
+		}
+
+		// Vanilla doesn't update the text edit, so it would keep showing the old text.
+		SetDlgItemTextA(context.getWindowHandle(), CONTROL_ID_CURRENT_TEXT_EDIT, info->text ? info->text : "");
+	}
+
 	void PatchDialogProc_AfterNotify(DialogProcContext& context) {
 		const auto param = context.getNotificationData();
 
@@ -809,6 +825,11 @@ namespace se::cs::dialog::dialogue_window {
 			break;
 		case TCN_SELCHANGE:
 			PatchDialogProc_AfterNotify_TabControl_SelectionChanged(context);
+			break;
+		case LVN_ENDLABELEDITA:
+			if (param->idFrom == CONTROL_ID_INFO_LIST) {
+				PatchDialogProc_AfterNotify_InfoList_EndLabelEdit(context);
+			}
 			break;
 		}
 	}
@@ -1285,11 +1306,33 @@ namespace se::cs::dialog::dialogue_window {
 		}
 	}
 
+	void PatchDialogProc_BeforeNotify_InfoList_EndLabelEdit(DialogProcContext& context) {
+		// The list view only reports the first 259 characters of a label edit, despite the
+		// info text limit being 512. Updates from here caused overwrites with truncated text.
+		// This needs to outlive the notification so that the original dialog proc can read it.
+		static std::string fullText;
+
+		const auto displayInfo = context.getNotificationListViewDisplayInfo();
+		if (displayInfo->item.pszText == nullptr) {
+			return;
+		}
+
+		// The edit control still exists at this point, and has the full text.
+		const auto hDlgLabelEdit = ListView_GetEditControl(displayInfo->hdr.hwndFrom);
+		if (hDlgLabelEdit) {
+			fullText = winui::GetWindowTextA(hDlgLabelEdit);
+			displayInfo->item.pszText = fullText.data();
+		}
+	}
+
 	void PatchDialogProc_BeforeNotify_InfoList(DialogProcContext& context) {
 		const auto lParam = context.getNotificationData();
 		switch (lParam->code) {
 		case LVN_GETDISPINFO:
 			PatchDialogProc_BeforeNotify_InfoList_GetDisplayInfo(context);
+			break;
+		case LVN_ENDLABELEDITA:
+			PatchDialogProc_BeforeNotify_InfoList_EndLabelEdit(context);
 			break;
 		}
 	}
