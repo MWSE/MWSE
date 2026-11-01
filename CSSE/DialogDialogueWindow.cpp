@@ -806,15 +806,14 @@ namespace se::cs::dialog::dialogue_window {
 			return;
 		}
 
-		const auto hWnd = context.getWindowHandle();
-		const auto userData = (UserData*)GetWindowLongA(hWnd, GWL_USERDATA);
+		const auto userData = context.getUserData<UserData>();
 		const auto info = userData->currentInfo;
 		if (info == nullptr) {
 			return;
 		}
 
 		// Vanilla doesn't update the text edit, so it would keep showing the old text.
-		SetDlgItemTextA(hWnd, CONTROL_ID_CURRENT_TEXT_EDIT, info->text ? info->text : "");
+		SetDlgItemTextA(context.getWindowHandle(), CONTROL_ID_CURRENT_TEXT_EDIT, info->text ? info->text : "");
 	}
 
 	void PatchDialogProc_AfterNotify(DialogProcContext& context) {
