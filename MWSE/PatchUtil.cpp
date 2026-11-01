@@ -127,7 +127,7 @@ namespace mwse::patch {
 	// Patch: Perform a lua reset pass when the game is torn down.
 	//
 
-	static const auto TES3_Game_Destructor = reinterpret_cast<void(__thiscall*)(TES3::Game*)>(0x4174A3);
+	static const auto TES3_Game_Destructor = reinterpret_cast<void(__thiscall*)(TES3::Game*)>(0x4174C0);
 	static void __fastcall PatchCleanupLua(TES3::Game* game) {
 		// Try to clean up any obvious references.
 		mwse::lua::LuaManager::getInstance().cleanup();
