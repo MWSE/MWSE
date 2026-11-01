@@ -124,6 +124,19 @@ namespace mwse::patch {
 	}
 
 	//
+	// Patch: Perform a lua reset pass when the game is torn down.
+	//
+
+	static const auto TES3_Game_Destructor = reinterpret_cast<void(__thiscall*)(TES3::Game*)>(0x4174A3);
+	static void __fastcall PatchCleanupLua(TES3::Game* game) {
+		// Try to clean up any obvious references.
+		mwse::lua::LuaManager::getInstance().cleanup();
+
+		// Call overwritten code.
+		TES3_Game_Destructor(game);
+	}
+
+	//
 	// Patch: Enable
 	//
 
@@ -2345,6 +2358,9 @@ namespace mwse::patch {
 		using se::memory::writePatchCodeUnprotected;
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
+
+		// Patch: Perform a lua reset pass when the game is torn down.
+		genCallEnforced(0x4174A3, 0x4174C0, reinterpret_cast<DWORD>(&PatchCleanupLua));
 
 		// Patch: Allow Morrowind.ini [Application] values to override registry-backed application settings.
 		auto Game_readSettings = &TES3::Game::readSettings;

@@ -408,4 +408,11 @@ function this.trigger(eventType, payload, options)
 	return payload
 end
 
+function this._cleanup()
+	generalEvents = {}
+	filteredEvents = {}
+	doOnceCallbacks = {}
+	eventPriorities {}
+end
+
 return this
