@@ -412,7 +412,7 @@ function this._cleanup()
 	generalEvents = {}
 	filteredEvents = {}
 	doOnceCallbacks = {}
-	eventPriorities {}
+	eventPriorities = {}
 end
 
 return this
