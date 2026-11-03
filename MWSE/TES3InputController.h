@@ -92,9 +92,14 @@ namespace TES3 {
 			std::reference_wrapper<BYTE[8]> getButtons();
 
 		};
+		struct DirectInputGamepadState : DIJOYSTATE {
+			std::reference_wrapper<BYTE[32]> getButtons();
+			std::reference_wrapper<LONG[2]> getSliders();
+			std::reference_wrapper<DWORD[4]> getPovs();
+		};
 		struct GamepadState {
-			DIJOYSTATE current;
-			DIJOYSTATE previous;
+			DirectInputGamepadState current;
+			DirectInputGamepadState previous;
 
 			GamepadState() = delete;
 			~GamepadState() = delete;
@@ -116,14 +121,14 @@ namespace TES3 {
 		};
 		unsigned int creationFlags; // 0x0
 		LPDIRECTINPUT8 directInputInterface; // 0x4
-		LPDIRECTINPUTDEVICE8 * gamepadsPointers[8]; // 0x8
+		LPDIRECTINPUTDEVICE8 gamepadsPointers[8]; // 0x8
 		LPDIRECTINPUTDEVICE8 keyboard; // 0x28
 		LPDIRECTINPUTDEVICE8 mouse; // 0x2C
 		GamepadState gamepadStates[8]; // 0x30
 		DIDEVICEINSTANCEA gamepads[8]; // 0x530
 		DIDEVCAPS gamepadCapabilities[8]; // 0x1750
 		DeviceAxisSupport gamepadAxisSupport[8];
-		int deviceCount; // 0x18F0
+		unsigned int deviceCount; // 0x18F0
 		unsigned char keyboardState[256]; // 0x18F4
 		unsigned char previousKeyboardState[256]; // 0x19F4
 		DirectInputMouseState mouseState; // 0x1AF4
@@ -140,6 +145,8 @@ namespace TES3 {
 		InputConfig inputMaps[34]; // 0x1B3C
 
 		static DIDEVICEOBJECTDATA lastReadKeyboardData;
+
+		static BOOL CALLBACK gamepadEnumCallback(const DIDEVICEINSTANCEA* device, InputController* context);
 
 		InputController() = delete;
 		~InputController() = delete;
@@ -163,6 +170,12 @@ namespace TES3 {
 		bool isMouseButtonDown(unsigned char button) const;
 		bool isMouseButtonPressedThisFrame(unsigned char button) const;
 		bool isMouseButtonReleasedThisFrame(unsigned char button) const;
+		size_t getGamepadCount() const;
+		bool isGamepadButtonDown(unsigned int gamepad, unsigned int button) const;
+		bool wasGamepadButtonDownLastFrame(unsigned int gamepad, unsigned int button) const;
+		bool isGamepadButtonPressedThisFrame(unsigned int gamepad, unsigned int button) const;
+		bool isGamepadButtonReleasedThisFrame(unsigned int gamepad, unsigned int button) const;
+		std::reference_wrapper<GamepadState[8]> getGamepadStates();
 		void clearTransientInputState();
 
 		bool isAltDown() const;
@@ -180,6 +193,9 @@ namespace TES3 {
 	};
 	static_assert(sizeof(InputController) == 0x1D5C, "TES3::InputController failed size validation");
 	static_assert(sizeof(InputController::DirectInputMouseState) == sizeof(DIMOUSESTATE2), "TES3::InputController::DirectInputMouseState failed size validation");
+	static_assert(sizeof(InputController::DirectInputGamepadState) == sizeof(DIJOYSTATE), "Unexpected gamepad state size.");
+	static_assert(offsetof(InputController, gamepadStates) == 0x30, "Unexpected gamepad state offset.");
+	static_assert(offsetof(InputController, deviceCount) == 0x18F0, "Unexpected gamepad count offset.");
 	static_assert(sizeof(InputController::GamepadState) == 0xA0, "TES3::InputController::GamepadState failed size validation");
 	static_assert(sizeof(InputController::DeviceAxisSupport) == 0x8, "TES3::InputController::DeviceAxisSupport failed size validation");
 	static_assert(sizeof(InputController::Unknown_0x1B28) == 0xC, "TES3::InputController::Unknown_0x1B28 failed size validation");

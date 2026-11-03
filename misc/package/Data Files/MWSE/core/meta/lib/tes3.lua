@@ -4060,6 +4060,10 @@ tes3.event = require("tes3.event")
 ---| `tes3.event.filterInventory`
 ---| `tes3.event.filterInventorySelect`
 ---| `tes3.event.filterSoulGemTarget`
+---| `tes3.event.gamepadAxis`
+---| `tes3.event.gamepadButtonDown`
+---| `tes3.event.gamepadButtonUp`
+---| `tes3.event.gamepadPov`
 ---| `tes3.event.infoFilter`
 ---| `tes3.event.infoGetText`
 ---| `tes3.event.infoLinkResolve`
@@ -4177,6 +4181,18 @@ tes3.flowDirection = require("tes3.flowDirection")
 --- @alias tes3.flowDirection
 ---| `tes3.flowDirection.leftToRight`
 ---| `tes3.flowDirection.topToBottom`
+
+tes3.gamepadAxis = require("tes3.gamepadAxis")
+
+--- @alias tes3.gamepadAxis
+---| `tes3.gamepadAxis.rx`
+---| `tes3.gamepadAxis.ry`
+---| `tes3.gamepadAxis.rz`
+---| `tes3.gamepadAxis.slider0`
+---| `tes3.gamepadAxis.slider1`
+---| `tes3.gamepadAxis.x`
+---| `tes3.gamepadAxis.y`
+---| `tes3.gamepadAxis.z`
 
 tes3.gmst = require("tes3.gmst")
 

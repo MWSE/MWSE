@@ -36,6 +36,27 @@ namespace mwse::lua {
 			usertypeDefinition["buttons"] = sol::readonly_property(&TES3::InputController::DirectInputMouseState::getButtons);
 		}
 
+		// Raw DirectInput gamepad state and its current/previous pair.
+		{
+			auto usertypeDefinition = state.new_usertype<TES3::InputController::DirectInputGamepadState>("tes3directInputGamepadState");
+			usertypeDefinition["new"] = sol::no_constructor;
+			usertypeDefinition["x"] = &TES3::InputController::DirectInputGamepadState::lX;
+			usertypeDefinition["y"] = &TES3::InputController::DirectInputGamepadState::lY;
+			usertypeDefinition["z"] = &TES3::InputController::DirectInputGamepadState::lZ;
+			usertypeDefinition["rx"] = &TES3::InputController::DirectInputGamepadState::lRx;
+			usertypeDefinition["ry"] = &TES3::InputController::DirectInputGamepadState::lRy;
+			usertypeDefinition["rz"] = &TES3::InputController::DirectInputGamepadState::lRz;
+			usertypeDefinition["buttons"] = sol::readonly_property(&TES3::InputController::DirectInputGamepadState::getButtons);
+			usertypeDefinition["sliders"] = sol::readonly_property(&TES3::InputController::DirectInputGamepadState::getSliders);
+			usertypeDefinition["povs"] = sol::readonly_property(&TES3::InputController::DirectInputGamepadState::getPovs);
+		}
+		{
+			auto usertypeDefinition = state.new_usertype<TES3::InputController::GamepadState>("tes3gamepadState");
+			usertypeDefinition["new"] = sol::no_constructor;
+			usertypeDefinition["current"] = sol::readonly_property(&TES3::InputController::GamepadState::current);
+			usertypeDefinition["previous"] = sol::readonly_property(&TES3::InputController::GamepadState::previous);
+		}
+
 		// Binding for TES3::InputController
 		{
 			// Start our usertype.
@@ -49,6 +70,12 @@ namespace mwse::lua {
 			usertypeDefinition["mouseState"] = sol::readonly_property(&TES3::InputController::mouseState);
 			usertypeDefinition["previousKeyboardState"] = sol::readonly_property(&TES3::InputController::getPreviousKeyboardState);
 			usertypeDefinition["previousMouseState"] = sol::readonly_property(&TES3::InputController::previousMouseState);
+
+			usertypeDefinition["gamepadCount"] = sol::readonly_property(&TES3::InputController::getGamepadCount);
+			usertypeDefinition["gamepadStates"] = sol::readonly_property(&TES3::InputController::getGamepadStates);
+			usertypeDefinition["isGamepadButtonDown"] = &TES3::InputController::isGamepadButtonDown;
+			usertypeDefinition["isGamepadButtonPressedThisFrame"] = &TES3::InputController::isGamepadButtonPressedThisFrame;
+			usertypeDefinition["isGamepadButtonReleasedThisFrame"] = &TES3::InputController::isGamepadButtonReleasedThisFrame;
 
 			// Basic function binding.
 			usertypeDefinition["isAltDown"] = &TES3::InputController::isAltDown;

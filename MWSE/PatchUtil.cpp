@@ -2359,6 +2359,10 @@ namespace mwse::patch {
 		using se::memory::writeBytesUnprotected;
 		using se::memory::writeDoubleWordEnforced;
 
+		// Patch: Support additional controller types.
+		writeDoubleWordEnforced(0x406227, 0x407010, reinterpret_cast<DWORD>(&TES3::InputController::gamepadEnumCallback));
+		writeDoubleWordEnforced(0x4078C5, 0x407010, reinterpret_cast<DWORD>(&TES3::InputController::gamepadEnumCallback));
+
 		// Patch: Perform a lua reset pass when the game is torn down.
 		genCallEnforced(0x4174A3, 0x4174C0, reinterpret_cast<DWORD>(&PatchCleanupLua));
 
