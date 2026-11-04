@@ -33,6 +33,10 @@ namespace se::cs {
 		unsigned int flags; // 0x8
 		GameFile* sourceFile; // 0xC
 
+		// The CS frees its objects with its own allocator, so objects we create must use it too.
+		static void* operator new(size_t size);
+		static void operator delete(void* block);
+
 		const char* getObjectID() const;
 
 		bool isFromMaster() const;

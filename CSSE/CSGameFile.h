@@ -110,7 +110,7 @@ namespace se::cs {
 		int unknown_0x4E0;
 		int unknown_0x4E4;
 		GameFile** masters; // 0x4E8
-		int unknown_0x4EC;
+		DWORD lastReferenceNumber; // 0x4EC
 		int unknown_0x4F0;
 
 		bool getIsMasterFile() const;
