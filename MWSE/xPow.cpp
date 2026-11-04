@@ -6,18 +6,19 @@ namespace mwse {
 	class xPow : InstructionInterface_t {
 	public:
 		xPow();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xPow xPowInstance;
 
-	xPow::xPow() : mwse::InstructionInterface_t(OpCode::xPow) {}
+	xPow::xPow() : InstructionInterface_t(OpCode::xPow) {}
 
-	float xPow::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float base = mwse::Stack::getInstance().popFloat();
-		float exponent = mwse::Stack::getInstance().popFloat();
+	float xPow::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		float base = stack.popFloat();
+		float exponent = stack.popFloat();
 
-		mwse::Stack::getInstance().pushFloat(std::powf(base, exponent));
+		stack.pushFloat(std::powf(base, exponent));
 
 		return 0.0f;
 	}

@@ -11,42 +11,40 @@ namespace mwse {
 	class xGetSkill : InstructionInterface_t {
 	public:
 		xGetSkill();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetSkill xGetSkillInstance;
 
-	xGetSkill::xGetSkill() : mwse::InstructionInterface_t(OpCode::xGetSkill) {}
+	xGetSkill::xGetSkill() : InstructionInterface_t(OpCode::xGetSkill) {}
 
-	float xGetSkill::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetSkill::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get skill id argument.
-		long skillId = mwse::Stack::getInstance().popLong();
+		long skillId = stack.popLong();
 		if (skillId < TES3::SkillID::FirstSkill || skillId > TES3::SkillID::LastSkill) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Invalid skill id: " << skillId << std::endl;
+				log::getLog() << "xGetSkill: Invalid skill id: " << skillId << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Call on invalid reference." << std::endl;
-			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Verify target record type.
 		if (reference->baseObject->objectType != TES3::ObjectType::NPC && reference->baseObject->objectType != TES3::ObjectType::Creature) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Reference is not a creature or NPC." << std::endl;
+				log::getLog() << "xGetSkill: Reference is not a creature or NPC." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -54,14 +52,14 @@ namespace mwse {
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetSkill: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetSkill: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the current value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[skillId].current);
+		stack.pushFloat(mobileObject->skills[skillId].current);
 
 		return 0.0f;
 	}

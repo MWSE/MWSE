@@ -6,18 +6,19 @@ namespace mwse {
 	class xBitOr : InstructionInterface_t {
 	public:
 		xBitOr();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xBitOr xBitOrInstance;
 
-	xBitOr::xBitOr() : mwse::InstructionInterface_t(OpCode::xBitOr) {}
+	xBitOr::xBitOr() : InstructionInterface_t(OpCode::xBitOr) {}
 
-	float xBitOr::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long param1 = mwse::Stack::getInstance().popLong();
-		long param2 = mwse::Stack::getInstance().popLong();
+	float xBitOr::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long param1 = stack.popLong();
+		long param2 = stack.popLong();
 
-		mwse::Stack::getInstance().pushLong(param1 | param2);
+		stack.pushLong(param1 | param2);
 
 		return 0.0f;
 	}

@@ -11,54 +11,52 @@ namespace mwse {
 	class xGetBaseAttribute : InstructionInterface_t {
 	public:
 		xGetBaseAttribute();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseAttribute xGetBaseAttributeInstance;
 
-	xGetBaseAttribute::xGetBaseAttribute() : mwse::InstructionInterface_t(OpCode::xGetBaseAttribute) {}
+	xGetBaseAttribute::xGetBaseAttribute() : InstructionInterface_t(OpCode::xGetBaseAttribute) {}
 
-	float xGetBaseAttribute::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 1) {
+	float xGetBaseAttribute::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 1) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: Function called with too few arguments." << std::endl;
+				log::getLog() << "xGetBaseAttribute: Function called with too few arguments." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Get attribute index as parameter.
-		long attributeId = mwse::Stack::getInstance().popLong();
+		long attributeId = stack.popLong();
 		if (attributeId < TES3::Attribute::FirstAttribute || attributeId > TES3::Attribute::LastAttribute) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: Invalid attribute id: " << attributeId << std::endl;
+				log::getLog() << "xGetBaseAttribute: Invalid attribute id: " << attributeId << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Get the associated MACP record.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAttribute: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseAttribute: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that attribute.
-		mwse::Stack::getInstance().pushFloat(mobileObject->attributes[attributeId].base);
+		stack.pushFloat(mobileObject->attributes[attributeId].base);
 
 		return 0.0f;
 	}

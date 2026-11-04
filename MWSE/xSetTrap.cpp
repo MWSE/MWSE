@@ -10,23 +10,21 @@ namespace mwse {
 	class xSetTrap : InstructionInterface_t {
 	public:
 		xSetTrap();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetTrap xSetTrapInstance;
 
-	xSetTrap::xSetTrap() : mwse::InstructionInterface_t(OpCode::xSetTrap) {}
+	xSetTrap::xSetTrap() : InstructionInterface_t(OpCode::xSetTrap) {}
 
-	float xSetTrap::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long spellId = mwse::Stack::getInstance().popLong();
+	float xSetTrap::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long spellId = stack.popLong();
 
 		// Get reference to what we're finding the trap of.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetTrap: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -36,7 +34,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xSetTrap: Called on a non-container, non-door reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -46,7 +44,7 @@ namespace mwse {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << "xSetTrap: Could not obtain lock node." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -60,7 +58,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					log::getLog() << "xSetTrap: No spell could be found with id '" << spellObjId << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 		}
@@ -69,7 +67,7 @@ namespace mwse {
 		lockNode->trap = spell;
 
 		// Return success.
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

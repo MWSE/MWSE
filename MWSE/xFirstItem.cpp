@@ -11,16 +11,16 @@ namespace mwse {
 	class xFirstItem : InstructionInterface_t {
 	public:
 		xFirstItem();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFirstItem xFirstItemInstance;
 
-	xFirstItem::xFirstItem() : mwse::InstructionInterface_t(OpCode::xFirstItem) {}
+	xFirstItem::xFirstItem() : InstructionInterface_t(OpCode::xFirstItem) {}
 
-	float xFirstItem::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xFirstItem::execute(VMExecuteInterface& virtualMachine) {
 		// Clear elements in our stored exterior ref list.
-		mwse::tes3::clearExteriorRefs();
+		tes3::clearExteriorRefs();
 
 		TES3::Reference* reference = nullptr;
 		auto dataHandler = TES3::DataHandler::get();
@@ -42,26 +42,26 @@ namespace mwse {
 					if (cellPointer->isFullyLoaded()) {
 						TES3::Reference* tempReference = static_cast<TES3::Reference*>(cellPointer->cell->temporaryRefs.head->skipDeletedObjects());
 						if (tempReference != nullptr) {
-							mwse::tes3::exteriorRefs[exteriorCount] = tempReference;
+							tes3::exteriorRefs[exteriorCount] = tempReference;
 							exteriorCount++;
 						}
 					}
 				}
 
 				// Make sure that we end our list with a nullptr, so we know we're done.
-				mwse::tes3::exteriorRefs[exteriorCount] = nullptr;
+				tes3::exteriorRefs[exteriorCount] = nullptr;
 
 				// Make sure the reference in the center cell is valid.
 				// If not, use the reference from another exterior cell.
 				if (reference == nullptr && exteriorCount > 0) {
 					exteriorCount--;
-					reference = mwse::tes3::exteriorRefs[exteriorCount];
-					mwse::tes3::exteriorRefs[exteriorCount] = nullptr;
+					reference = tes3::exteriorRefs[exteriorCount];
+					tes3::exteriorRefs[exteriorCount] = nullptr;
 				}
 			}
 		}
 
-		mwse::Stack::getInstance().pushLong((long)reference);
+		Stack::getInstance().pushPointer(reference);
 
 		return 0.0f;
 	}

@@ -11,24 +11,22 @@ namespace mwse {
 	class xSetService : InstructionInterface_t {
 	public:
 		xSetService();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetService xSetServiceInstance;
 
-	xSetService::xSetService() : mwse::InstructionInterface_t(OpCode::xSetService) {}
+	xSetService::xSetService() : InstructionInterface_t(OpCode::xSetService) {}
 
-	float xSetService::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetService::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		long flags = mwse::Stack::getInstance().popLong() & TES3::ServiceFlag::AllServicesMask;
+		long flags = stack.popLong() & TES3::ServiceFlag::AllServicesMask;
 
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetService: Called on invalid reference." << std::endl;
-			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -39,7 +37,7 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetService: Could not obtain AI configuration." << std::endl;
+				log::getLog() << "xSetService: Could not obtain AI configuration." << std::endl;
 			}
 		}
 

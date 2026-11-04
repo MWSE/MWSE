@@ -8,23 +8,21 @@ namespace mwse {
 	class xGetQuality : InstructionInterface_t {
 	public:
 		xGetQuality();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetQuality xGetQualityInstance;
 
-	xGetQuality::xGetQuality() : mwse::InstructionInterface_t(OpCode::xGetQuality) {}
+	xGetQuality::xGetQuality() : InstructionInterface_t(OpCode::xGetQuality) {}
 
-	float xGetQuality::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetQuality::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetQuality: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
@@ -32,13 +30,13 @@ namespace mwse {
 		TES3::Object* object = reference->baseObject;
 		if (object == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetQuality: No base record found." << std::endl;
+				log::getLog() << "xGetQuality: No base record found." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushFloat(object->getQuality());
+		stack.pushFloat(object->getQuality());
 
 		return 0.0f;
 	}

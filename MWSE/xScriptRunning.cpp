@@ -13,24 +13,25 @@ namespace mwse {
 	class xScriptRunning : InstructionInterface_t {
 	public:
 		xScriptRunning();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xScriptRunning xScriptRunningInstance;
 
-	xScriptRunning::xScriptRunning() : mwse::InstructionInterface_t(OpCode::xScriptRunning) {}
+	xScriptRunning::xScriptRunning() : InstructionInterface_t(OpCode::xScriptRunning) {}
 
-	float xScriptRunning::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xScriptRunning::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& scriptName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& scriptName = virtualMachine.getString(stack.popLong());
 
 		// Try to get the target script.
 		TES3::Script* targetScript = TES3::DataHandler::get()->nonDynamicData->findScriptByName(scriptName.c_str());
 		if (targetScript == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xScriptRunning: No script could be found with name '" << scriptName << "'." << std::endl;
+				log::getLog() << "xScriptRunning: No script could be found with name '" << scriptName << "'." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -38,10 +39,10 @@ namespace mwse {
 		TES3::Script* script = virtualMachine.getScript();
 		if (script) {
 			bool isRunning = TES3::WorldController::get()->isGlobalScriptRunning(targetScript);
-			mwse::Stack::getInstance().pushLong(isRunning);
+			stack.pushLong(isRunning);
 		}
 		else {
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 		}
 
 		return 0.0f;

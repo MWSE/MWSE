@@ -6,16 +6,17 @@ namespace mwse {
 	class xNot : InstructionInterface_t {
 	public:
 		xNot();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xNot xNotInstance;
 
-	xNot::xNot() : mwse::InstructionInterface_t(OpCode::xNot) {}
+	xNot::xNot() : InstructionInterface_t(OpCode::xNot) {}
 
-	float xNot::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long value = mwse::Stack::getInstance().popLong();
-		mwse::Stack::getInstance().pushLong(!value);
+	float xNot::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long value = stack.popLong();
+		stack.pushLong(!value);
 
 		return 0.0f;
 	}

@@ -11,37 +11,35 @@ namespace mwse {
 	class xGetBaseAlteration : InstructionInterface_t {
 	public:
 		xGetBaseAlteration();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseAlteration xGetBaseAlterationInstance;
 
-	xGetBaseAlteration::xGetBaseAlteration() : mwse::InstructionInterface_t(OpCode::xGetBaseAlteration) {}
+	xGetBaseAlteration::xGetBaseAlteration() : InstructionInterface_t(OpCode::xGetBaseAlteration) {}
 
-	float xGetBaseAlteration::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseAlteration::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAlteration: No reference provided." << std::endl;
-			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAlteration: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseAlteration: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::Alteration].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::Alteration].base);
 
 		return 0.0f;
 	}

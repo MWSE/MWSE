@@ -10,46 +10,47 @@ namespace mwse {
 	class xSetSpellInfo : InstructionInterface_t {
 	public:
 		xSetSpellInfo();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetSpellInfo xSetSpellInfoInstance;
 
-	xSetSpellInfo::xSetSpellInfo() : mwse::InstructionInterface_t(OpCode::xSetSpellInfo) {}
+	xSetSpellInfo::xSetSpellInfo() : InstructionInterface_t(OpCode::xSetSpellInfo) {}
 
-	float xSetSpellInfo::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetSpellInfo::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& spellId = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		long nameId = mwse::Stack::getInstance().popLong();
-		long type = mwse::Stack::getInstance().popLong();
-		long cost = mwse::Stack::getInstance().popLong();
-		long flags = mwse::Stack::getInstance().popLong();
-		long origin = mwse::Stack::getInstance().popLong();
+		mwseString& spellId = virtualMachine.getString(stack.popLong());
+		long nameId = stack.popLong();
+		long type = stack.popLong();
+		long cost = stack.popLong();
+		long flags = stack.popLong();
+		long origin = stack.popLong();
 
 		// Validate spell type.
 		if (type < TES3::SpellCastType::FirstCastType || type > TES3::SpellCastType::LastCastType) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Spell type out of range: " << type << std::endl;
+				log::getLog() << "xSetSpellInfo: Spell type out of range: " << type << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Validate spell flags.
 		if (flags < TES3::SpellFlag::NoSpellFlags || flags > TES3::SpellFlag::AllSpellFlags) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Spell flags out of range: " << flags << std::endl;
+				log::getLog() << "xSetSpellInfo: Spell flags out of range: " << flags << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Validate spell origin.
 		if (origin != 0 && (origin < TES3::SpellOrigin::FirstSpellOrigin || origin > TES3::SpellOrigin::LastSpellOrigin)) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Spell origin out of range: " << origin << std::endl;
+				log::getLog() << "xSetSpellInfo: Spell origin out of range: " << origin << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -57,9 +58,9 @@ namespace mwse {
 		const auto spell = TES3::DataHandler::get()->nonDynamicData->resolveObjectByType<TES3::Spell>(spellId);;
 		if (spell == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
+				log::getLog() << "xSetSpellInfo: Could not find spell of id '" << spellId << "'" << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -68,9 +69,9 @@ namespace mwse {
 			mwseString& name = virtualMachine.getString(nameId);
 			if (name.length() > 31) {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-					mwse::log::getLog() << "xSetSpellInfo: Given name must be 31 characters or less." << std::endl;
+					log::getLog() << "xSetSpellInfo: Given name must be 31 characters or less." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(false);
+				stack.pushLong(false);
 				return 0.0f;
 			}
 
@@ -102,7 +103,7 @@ namespace mwse {
 		}
 
 		// Report success.
-		mwse::Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

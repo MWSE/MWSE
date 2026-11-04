@@ -6,15 +6,16 @@ namespace mwse {
 	class xArcTan : InstructionInterface_t {
 	public:
 		xArcTan();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xArcTan xArcTanInstance;
 
-	xArcTan::xArcTan() : mwse::InstructionInterface_t(OpCode::xArcTan) {}
+	xArcTan::xArcTan() : InstructionInterface_t(OpCode::xArcTan) {}
 
-	float xArcTan::execute(mwse::VMExecuteInterface& virtualMachine) {
-		mwse::Stack::getInstance().pushFloat(std::atan(mwse::Stack::getInstance().popFloat()));
+	float xArcTan::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		stack.pushFloat(std::atan(stack.popFloat()));
 		return 0.0f;
 	}
 }

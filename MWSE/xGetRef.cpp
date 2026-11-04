@@ -7,22 +7,23 @@ namespace mwse {
 	{
 	public:
 		xGetRef();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetRef xGetRefInstance;
 
 	xGetRef::xGetRef() : InstructionInterface_t(OpCode::xGetRef) {}
 
-	float xGetRef::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetRef::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the parameter.
-		mwseString& id = virtualMachine.getString(Stack::getInstance().popLong());
+		mwseString& id = virtualMachine.getString(stack.popLong());
 
 		// Get its reference.
 		TES3::Reference* ref = virtualMachine.getReference(id.c_str());
 
 		// Push back as long.
-		Stack::getInstance().pushLong((long)ref);
+		stack.pushPointer(ref);
 
 		return 0.0f;
 	}

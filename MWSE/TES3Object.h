@@ -94,6 +94,7 @@ namespace TES3 {
 		typedef unsigned int value_type;
 
 		enum Flag : value_type {
+			FromMaster = 0x1,
 			Modified = 0x2,
 			LinksResolved = 0x8,
 			NoCollision = 0x10,
@@ -106,6 +107,7 @@ namespace TES3 {
 		};
 
 		enum FlagBit {
+			FromMasterBit = 0,
 			ModifiedBit = 1,
 			LinksResolvedBit = 3,
 			NoCollisionBit = 4,

@@ -9,22 +9,23 @@ namespace mwse {
 	class xGetMCPFeatureState : InstructionInterface_t {
 	public:
 		xGetMCPFeatureState();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetMCPFeatureState xGetMCPFeatureStateInstance;
 
-	xGetMCPFeatureState::xGetMCPFeatureState() : mwse::InstructionInterface_t(OpCode::xGetMCPFeatureState) {}
+	xGetMCPFeatureState::xGetMCPFeatureState() : InstructionInterface_t(OpCode::xGetMCPFeatureState) {}
 
-	float xGetMCPFeatureState::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long id = mwse::Stack::getInstance().popLong();
+	float xGetMCPFeatureState::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long id = stack.popLong();
 
-		if (mwse::mcp::hasFeaturesFound()) {
-			bool enabled = mwse::mcp::getFeatureEnabled(id);
-			mwse::Stack::getInstance().pushShort(enabled);
+		if (mcp::hasFeaturesFound()) {
+			bool enabled = mcp::getFeatureEnabled(id);
+			stack.pushShort(enabled);
 		}
 		else {
-			mwse::Stack::getInstance().pushShort(-1);
+			stack.pushShort(-1);
 		}
 
 		return 0.0f;

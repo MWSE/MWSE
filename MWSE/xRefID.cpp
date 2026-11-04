@@ -9,19 +9,16 @@ namespace mwse {
 	class xRefID : InstructionInterface_t {
 	public:
 		xRefID();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xRefID xRefIDInstance;
 
-	xRefID::xRefID() : mwse::InstructionInterface_t(OpCode::xRefID) {}
+	xRefID::xRefID() : InstructionInterface_t(OpCode::xRefID) {}
 
-	float xRefID::execute(mwse::VMExecuteInterface& virtualMachine) {
-		TES3::Reference* reference = virtualMachine.getReference();
+	float xRefID::execute(VMExecuteInterface& virtualMachine) {
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xRefID: Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 

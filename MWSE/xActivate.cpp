@@ -12,23 +12,20 @@ namespace mwse {
 	class xActivate : InstructionInterface_t {
 	public:
 		xActivate();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xActivate xActivateInstance;
 
 	xActivate::xActivate() : InstructionInterface_t(OpCode::xActivate) {}
 
-	float xActivate::execute(mwse::VMExecuteInterface& virtualMachine) {
-		// Get potential target.
-		long parameter = Stack::getInstance().popLong();
+	float xActivate::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		auto target = stack.popPointer<TES3::Reference*>();
 
 		// Verify that the script is called on a valid reference.
-		TES3::Reference* reference = virtualMachine.getReference();
+		TES3::Reference* reference = getReference(virtualMachine, __FUNCTION__);
 		if (reference == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << __FUNCTION__ << ": Called on invalid reference." << std::endl;
-			}
 			return 0.0f;
 		}
 
@@ -42,24 +39,9 @@ namespace mwse {
 		}
 
 		// Determine if the target is a reference.
-		TES3::Reference* target = nullptr;
-		try {
-			TES3::Reference* potential = reinterpret_cast<TES3::Reference*>(parameter);
-			if (potential && potential->objectType == TES3::ObjectType::Reference) {
-				target = potential;
-			}
-		}
-		catch (std::exception&) {
+		if (target == nullptr || target->objectType != TES3::ObjectType::Reference) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 				log::getLog() << __FUNCTION__ << ": Target reference could not be resolved." << std::endl;
-			}
-			return 0.0f;
-		}
-
-		// Verify that the target reference was found.
-		if (target == nullptr) {
-			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				log::getLog() << __FUNCTION__ << ": Target reference is invalid." << std::endl;
 			}
 			return 0.0f;
 		}
@@ -71,19 +53,19 @@ namespace mwse {
 			activator->type = TES3::AttachmentType::Action;
 			activator->next = nullptr;
 			activator->reference = nullptr;
-			activator->flags = 1;
+			activator->flags = TES3::ActionFlags::Flag::UseEnabled;
 
 			target->insertAttachment(activator);
 		}
 
 		// Ensure that our flags and reference is accurate.
-		activator->flags = 2;
+		activator->flags = TES3::ActionFlags::Flag::OnActivate;
 		activator->reference = reference;
 
 		// Call the original activate function.
 		TES3::Script* script = virtualMachine.getScript();
 		mwscript::Activate(script, target);
-		Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

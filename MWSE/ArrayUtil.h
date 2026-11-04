@@ -1,9 +1,9 @@
 #pragma once
 
 namespace mwse {
-	typedef long ArrayItem_t;
-	typedef std::vector<ArrayItem_t> ContainedArray_t;
-	typedef std::vector<ContainedArray_t> Arrays_t;
+	using ArrayItem_t = long;
+	using ContainedArray_t = std::vector<ArrayItem_t>;
+	using Arrays_t = std::vector<ContainedArray_t>;
 
 	class Arrays {
 	public:
@@ -28,7 +28,7 @@ namespace mwse {
 
 		static Arrays singleton;
 
-		static size_t const maxArrayId = 16777215; // max 24 bit int - avoid exceding MW global precision
+		static constexpr size_t maxArrayId = 16777215; // max 24 bit int - avoid exceding MW global precision
 
 		Arrays_t arrays;
 	};

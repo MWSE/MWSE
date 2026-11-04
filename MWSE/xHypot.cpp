@@ -6,18 +6,19 @@ namespace mwse {
 	class xHypot : InstructionInterface_t {
 	public:
 		xHypot();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xHypot xHypotInstance;
 
-	xHypot::xHypot() : mwse::InstructionInterface_t(OpCode::xHypot) {}
+	xHypot::xHypot() : InstructionInterface_t(OpCode::xHypot) {}
 
-	float xHypot::execute(mwse::VMExecuteInterface& virtualMachine) {
-		float param1 = mwse::Stack::getInstance().popFloat();
-		float param2 = mwse::Stack::getInstance().popFloat();
+	float xHypot::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		float param1 = stack.popFloat();
+		float param2 = stack.popFloat();
 
-		mwse::Stack::getInstance().pushFloat(std::hypotf(param1, param2));
+		stack.pushFloat(std::hypotf(param1, param2));
 
 		return 0.0f;
 	}
