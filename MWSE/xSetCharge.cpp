@@ -11,24 +11,25 @@ namespace mwse {
 	class xSetCharge : InstructionInterface_t {
 	public:
 		xSetCharge();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetCharge xSetChargeInstance;
 
-	xSetCharge::xSetCharge() : mwse::InstructionInterface_t(OpCode::xSetCharge) {}
+	xSetCharge::xSetCharge() : InstructionInterface_t(OpCode::xSetCharge) {}
 
-	float xSetCharge::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetCharge::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get charge from parameter.
-		float charge = Stack::getInstance().popFloat();
+		float charge = stack.popFloat();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetCharge: No reference provided." << std::endl;
+				log::getLog() << "xSetCharge: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
@@ -36,9 +37,9 @@ namespace mwse {
 		TES3::BaseObject* record = reference->baseObject;
 		if (record == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetCharge: No record found for reference." << std::endl;
+				log::getLog() << "xSetCharge: No record found for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
@@ -50,13 +51,13 @@ namespace mwse {
 		}
 		else {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetCharge: Could not get attached VARNODE." << std::endl;
+				log::getLog() << "xSetCharge: Could not get attached VARNODE." << std::endl;
 			}
-			mwse::Stack::getInstance().pushShort(0);
+			stack.pushShort(0);
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushShort(1);
+		stack.pushShort(1);
 
 		return 0.0f;
 	}

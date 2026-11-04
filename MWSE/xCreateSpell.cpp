@@ -15,42 +15,43 @@ namespace mwse {
 	class xCreateSpell : InstructionInterface_t {
 	public:
 		xCreateSpell();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xCreateSpell xCreateSpellInstance;
 
-	xCreateSpell::xCreateSpell() : mwse::InstructionInterface_t(OpCode::xCreateSpell) {}
+	xCreateSpell::xCreateSpell() : InstructionInterface_t(OpCode::xCreateSpell) {}
 
-	float xCreateSpell::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xCreateSpell::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get parameters.
-		mwseString& spellId = virtualMachine.getString(Stack::getInstance().popLong());
-		mwseString& spellName = virtualMachine.getString(Stack::getInstance().popLong());
+		mwseString& spellId = virtualMachine.getString(stack.popLong());
+		mwseString& spellName = virtualMachine.getString(stack.popLong());
 
 		// Verify spell Id length.
 		if (spellId.length() > 31) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xCreateSpell: Spell id length of '" << spellId << "' is invalid. Must be 31 characters of less." << std::endl;
+				log::getLog() << "xCreateSpell: Spell id length of '" << spellId << "' is invalid. Must be 31 characters of less." << std::endl;
 			}
-			Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Verify spell Id length.
 		if (spellName.length() > 31) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xCreateSpell: Spell name length of '" << spellName << "' is invalid. Must be 31 characters of less." << std::endl;
+				log::getLog() << "xCreateSpell: Spell name length of '" << spellName << "' is invalid. Must be 31 characters of less." << std::endl;
 			}
-			Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
 		// Verify that a spell of this id doesn't already exist.
 		if (TES3::DataHandler::get()->nonDynamicData->getSpellById(spellId.c_str()) != nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xCreateSpell: A spell of the given id '" << spellId << "' already exists." << std::endl;
+				log::getLog() << "xCreateSpell: A spell of the given id '" << spellId << "' already exists." << std::endl;
 			}
-			Stack::getInstance().pushLong(false);
+			stack.pushLong(false);
 			return 0.0f;
 		}
 
@@ -79,11 +80,11 @@ namespace mwse {
 		TES3::DataHandler::get()->nonDynamicData->addNewObject(newSpell);
 
 		// Fire off spell created event.
-		if (mwse::lua::event::SpellCreatedEvent::getEventEnabled()) {
-			mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new mwse::lua::event::SpellCreatedEvent(newSpell, "script"));
+		if (lua::event::SpellCreatedEvent::getEventEnabled()) {
+			lua::LuaManager::getInstance().getThreadSafeStateHandle().triggerEvent(new lua::event::SpellCreatedEvent(newSpell, "script"));
 		}
 
-		Stack::getInstance().pushLong(true);
+		stack.pushLong(true);
 
 		return 0.0f;
 	}

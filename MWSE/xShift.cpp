@@ -6,22 +6,23 @@ namespace mwse {
 	class xShift : InstructionInterface_t {
 	public:
 		xShift();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xShift xShiftInstance;
 
-	xShift::xShift() : mwse::InstructionInterface_t(OpCode::xShift) {}
+	xShift::xShift() : InstructionInterface_t(OpCode::xShift) {}
 
-	float xShift::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long value = mwse::Stack::getInstance().popLong();
-		long magnitude = mwse::Stack::getInstance().popLong();
+	float xShift::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long value = stack.popLong();
+		long magnitude = stack.popLong();
 
 		if (magnitude < 0) {
-			mwse::Stack::getInstance().pushLong(value >> abs(magnitude));
+			stack.pushLong(value >> abs(magnitude));
 		}
 		else {
-			mwse::Stack::getInstance().pushLong(value << magnitude);
+			stack.pushLong(value << magnitude);
 		}
 
 		return 0.0f;

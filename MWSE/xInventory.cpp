@@ -10,45 +10,46 @@ namespace mwse {
 	class xInventory : InstructionInterface_t {
 	public:
 		xInventory();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xInventory xInventoryInstance;
 
-	xInventory::xInventory() : mwse::InstructionInterface_t(OpCode::xInventory) {}
+	xInventory::xInventory() : InstructionInterface_t(OpCode::xInventory) {}
 
-	float xInventory::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xInventory::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xInventory: Invalid reference attachment." << std::endl;
+				log::getLog() << "xInventory: Invalid reference attachment." << std::endl;
 			}
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
 		if (!reference->baseObject->isActor()) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xInventory: Reference is not for an actor." << std::endl;
+				log::getLog() << "xInventory: Reference is not for an actor." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(0.0f);
+			stack.pushFloat(0.0f);
 			return 0.0f;
 		}
 
 		NI::IteratedList<TES3::ItemStack*>::Node* firstItem = static_cast<TES3::Actor*>(reference->baseObject)->inventory.itemStacks.head;
 		if (firstItem == nullptr) {
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
-			mwse::Stack::getInstance().pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		mwse::Stack::getInstance().pushLong((long)firstItem->next);
-		mwse::Stack::getInstance().pushLong(firstItem->data->count);
-		mwse::Stack::getInstance().pushString(firstItem->data->object->getObjectID());
+		stack.pushPointer(firstItem->next);
+		stack.pushLong(firstItem->data->count);
+		stack.pushString(firstItem->data->object->getObjectID());
 
 		return 0.0f;
 	}

@@ -10,29 +10,29 @@ namespace mwse {
 	class xSetLevel : InstructionInterface_t {
 	public:
 		xSetLevel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xSetLevel xSetLevelInstance;
 
-	xSetLevel::xSetLevel() : mwse::InstructionInterface_t(OpCode::xSetLevel) {}
+	xSetLevel::xSetLevel() : InstructionInterface_t(OpCode::xSetLevel) {}
 
-	float xSetLevel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xSetLevel::execute(VMExecuteInterface& virtualMachine) {
 		// Get parameters.
-		short level = mwse::Stack::getInstance().popShort();
+		short level = Stack::getInstance().popShort();
 
 		// Get reference.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xSetLevel: Called on invalid reference." << std::endl;
+				log::getLog() << "xSetLevel: Called on invalid reference." << std::endl;
 			}
 			return 0.0f;
 		}
 
 		// Call the original function.
 		TES3::Script* script = virtualMachine.getScript();
-		mwse::mwscript::SetLevel(script, reference, level);
+		mwscript::SetLevel(script, reference, level);
 
 		return 0.0f;
 	}

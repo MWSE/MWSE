@@ -7,25 +7,26 @@ namespace mwse {
 	class xClearArray : InstructionInterface_t {
 	public:
 		xClearArray();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xClearArray xClearArrayInstance;
 
-	xClearArray::xClearArray() : mwse::InstructionInterface_t(OpCode::xClearArray) {}
+	xClearArray::xClearArray() : InstructionInterface_t(OpCode::xClearArray) {}
 
-	float xClearArray::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 1) {
-			mwse::log::getLog() << "xClearArray: Function called with no arguments." << std::endl;
-			mwse::Stack::getInstance().pushLong(0);
+	float xClearArray::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 1) {
+			log::getLog() << "xClearArray: Function called with no arguments." << std::endl;
+			stack.pushLong(0);
 			return 0.0f;
 		}
 
-		long id = mwse::Stack::getInstance().popLong();
+		long id = stack.popLong();
 
-		long status = mwse::Arrays::getInstance().clear("xClearArray", id);
+		long status = Arrays::getInstance().clear("xClearArray", id);
 
-		mwse::Stack::getInstance().pushLong(status);
+		stack.pushLong(status);
 
 		return 0.0f;
 	}

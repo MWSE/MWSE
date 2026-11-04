@@ -34,7 +34,7 @@ namespace mwse::lua {
 		};
 
 		state["mwse"]["stack"]["pushObject"] = [](sol::object value) {
-			Stack::getInstance().pushLong((DWORD)value.as<TES3::BaseObject*>());
+			Stack::getInstance().pushPointer<TES3::BaseObject*>(value.as<TES3::BaseObject*>());
 		};
 
 		//
@@ -72,7 +72,7 @@ namespace mwse::lua {
 			Stack& stack = Stack::getInstance();
 			sol::optional<std::string> maybe_ret;
 			if (!stack.empty()) {
-				maybe_ret = mwAdapter::GetVMInstance()->getString(Stack::getInstance().popLong());
+				maybe_ret = mwAdapter::GetVMInstance()->getString(stack.popLong());
 			}
 			return maybe_ret;
 		};
@@ -81,7 +81,7 @@ namespace mwse::lua {
 			Stack& stack = Stack::getInstance();
 			TES3::BaseObject* ret = nullptr;
 			if (!stack.empty()) {
-				ret = reinterpret_cast<TES3::BaseObject*>(Stack::getInstance().popLong());
+				ret = stack.popPointer<TES3::BaseObject*>();
 			}
 			return ret;
 		};

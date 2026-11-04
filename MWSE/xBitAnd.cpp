@@ -6,18 +6,19 @@ namespace mwse {
 	class xBitAnd : InstructionInterface_t {
 	public:
 		xBitAnd();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xBitAnd xBitAndInstance;
 
-	xBitAnd::xBitAnd() : mwse::InstructionInterface_t(OpCode::xBitAnd) {}
+	xBitAnd::xBitAnd() : InstructionInterface_t(OpCode::xBitAnd) {}
 
-	float xBitAnd::execute(mwse::VMExecuteInterface& virtualMachine) {
-		long param1 = mwse::Stack::getInstance().popLong();
-		long param2 = mwse::Stack::getInstance().popLong();
+	float xBitAnd::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		long param1 = stack.popLong();
+		long param2 = stack.popLong();
 
-		mwse::Stack::getInstance().pushLong(param1 & param2);
+		stack.pushLong(param1 & param2);
 
 		return 0.0f;
 	}

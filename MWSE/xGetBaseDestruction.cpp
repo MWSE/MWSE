@@ -10,37 +10,38 @@ namespace mwse {
 	class xGetBaseDestruction : InstructionInterface_t {
 	public:
 		xGetBaseDestruction();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseDestruction xGetBaseDestructionInstance;
 
-	xGetBaseDestruction::xGetBaseDestruction() : mwse::InstructionInterface_t(OpCode::xGetBaseDestruction) {}
+	xGetBaseDestruction::xGetBaseDestruction() : InstructionInterface_t(OpCode::xGetBaseDestruction) {}
 
-	float xGetBaseDestruction::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseDestruction::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseDestruction: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseDestruction: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileNPC();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseDestruction: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseDestruction: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->skills[TES3::SkillID::Destruction].base);
+		stack.pushFloat(mobileObject->skills[TES3::SkillID::Destruction].base);
 
 		return 0.0f;
 	}

@@ -8,21 +8,22 @@ namespace mwse {
 	class xFileReadText : InstructionInterface_t {
 	public:
 		xFileReadText();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xFileReadText xFileReadTextInstance;
 
-	xFileReadText::xFileReadText() : mwse::InstructionInterface_t(OpCode::xFileReadText) {}
+	xFileReadText::xFileReadText() : InstructionInterface_t(OpCode::xFileReadText) {}
 
-	float xFileReadText::execute(mwse::VMExecuteInterface& virtualMachine) {
-		if (mwse::Stack::getInstance().size() < 2) {
-			mwse::log::getLog() << "xFileReadText: Function called with too few arguments." << std::endl;
+	float xFileReadText::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
+		if (stack.size() < 2) {
+			log::getLog() << "xFileReadText: Function called with too few arguments." << std::endl;
 			return 0.0f;
 		}
 
-		mwseString& fileName = virtualMachine.getString(mwse::Stack::getInstance().popLong());
-		mwseString& format = virtualMachine.getString(mwse::Stack::getInstance().popLong());
+		mwseString& fileName = virtualMachine.getString(stack.popLong());
+		mwseString& format = virtualMachine.getString(stack.popLong());
 
 		// Count how many results there should be based on the format string
 		bool stopAtEndOfLine = false;
@@ -34,10 +35,10 @@ namespace mwse {
 		std::vector<long> results(maxResults);
 
 		// Read the string from the file. If we can't read a string back, push 0s.
-		std::string readString = mwse::FileSystem::getInstance().readString(fileName, stopAtEndOfLine);
+		std::string readString = FileSystem::getInstance().readString(fileName, stopAtEndOfLine);
 		if (readString.empty()) {
 			while (maxResults--) {
-				mwse::Stack::getInstance().pushLong(0);
+				stack.pushLong(0);
 			}
 			return 0.0f;
 		}
@@ -45,7 +46,7 @@ namespace mwse {
 		// If we did get a string back, secernate and return.
 		se::string::secernate(format.c_str(), readString.c_str(), results.data(), maxResults);
 		while (maxResults--) {
-			mwse::Stack::getInstance().pushLong(results[maxResults]);
+			stack.pushLong(results[maxResults]);
 		}
 
 		return 0.0f;

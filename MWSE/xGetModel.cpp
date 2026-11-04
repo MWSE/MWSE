@@ -10,16 +10,17 @@ namespace mwse {
 	class xGetModel : InstructionInterface_t {
 	public:
 		xGetModel();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	};
 
 	static xGetModel xGetModelInstance;
 
-	xGetModel::xGetModel() : mwse::InstructionInterface_t(OpCode::xGetModel) {}
+	xGetModel::xGetModel() : InstructionInterface_t(OpCode::xGetModel) {}
 
-	float xGetModel::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetModel::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get our parameter.
-		long param = Stack::getInstance().popLong();
+		long param = stack.popLong();
 
 		const char* model = nullptr;
 
@@ -32,7 +33,7 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					log::getLog() << "xGetModel: No record found for id '" << id << "'." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(0);
+				stack.pushLong(0);
 				return 0.0f;
 			}
 			model = record->getModelPath();
@@ -45,14 +46,14 @@ namespace mwse {
 				if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
 					log::getLog() << "xGetModel: Invalid reference." << std::endl;
 				}
-				mwse::Stack::getInstance().pushLong(0);
+				stack.pushLong(0);
 				return 0.0f;
 			}
 			model = reference->baseObject->getModelPath();
 		}
 
 		// Push the model back to the stack.
-		Stack::getInstance().pushString(model);
+		stack.pushString(model);
 
 		return 0.0f;
 	}

@@ -10,37 +10,38 @@ namespace mwse {
 	class xGetBaseAgi : InstructionInterface_t {
 	public:
 		xGetBaseAgi();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseAgi xGetBaseAgiInstance;
 
-	xGetBaseAgi::xGetBaseAgi() : mwse::InstructionInterface_t(OpCode::xGetBaseAgi) {}
+	xGetBaseAgi::xGetBaseAgi() : InstructionInterface_t(OpCode::xGetBaseAgi) {}
 
-	float xGetBaseAgi::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseAgi::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		if (reference == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAgi: No reference provided." << std::endl;
+				log::getLog() << "xGetBaseAgi: No reference provided." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseAgi: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseAgi: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the current value of that attribute.
-		mwse::Stack::getInstance().pushFloat(mobileObject->attributes[TES3::Attribute::Agility].base);
+		stack.pushFloat(mobileObject->attributes[TES3::Attribute::Agility].base);
 
 		return 0.0f;
 	}

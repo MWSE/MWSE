@@ -10,29 +10,30 @@ namespace mwse {
 	class xGetBaseHealth : InstructionInterface_t {
 	public:
 		xGetBaseHealth();
-		virtual float execute(VMExecuteInterface& virtualMachine);
+		float execute(VMExecuteInterface& virtualMachine) override;
 	private:
 		const float INVALID_VALUE = -1.0f;
 	};
 
 	static xGetBaseHealth xGetBaseHealthInstance;
 
-	xGetBaseHealth::xGetBaseHealth() : mwse::InstructionInterface_t(OpCode::xGetBaseHealth) {}
+	xGetBaseHealth::xGetBaseHealth() : InstructionInterface_t(OpCode::xGetBaseHealth) {}
 
-	float xGetBaseHealth::execute(mwse::VMExecuteInterface& virtualMachine) {
+	float xGetBaseHealth::execute(VMExecuteInterface& virtualMachine) {
+		auto& stack = Stack::getInstance();
 		// Get the associated MACP record.
 		TES3::Reference* reference = virtualMachine.getReference();
 		auto mobileObject = reference->getAttachedMobileActor();
 		if (mobileObject == nullptr) {
 			if constexpr (DEBUG_MWSCRIPT_FUNCTIONS) {
-				mwse::log::getLog() << "xGetBaseHealth: Could not find MACP record for reference." << std::endl;
+				log::getLog() << "xGetBaseHealth: Could not find MACP record for reference." << std::endl;
 			}
-			mwse::Stack::getInstance().pushFloat(INVALID_VALUE);
+			stack.pushFloat(INVALID_VALUE);
 			return 0.0f;
 		}
 
 		// Push the base value of that skill.
-		mwse::Stack::getInstance().pushFloat(mobileObject->health.base);
+		stack.pushFloat(mobileObject->health.base);
 
 		return 0.0f;
 	}
